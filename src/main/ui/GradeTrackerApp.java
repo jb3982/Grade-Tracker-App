@@ -6,17 +6,17 @@ import model.Student;
 
 import java.util.*;
 
-import static model.Grade.calculateGPA;
-
 public class GradeTrackerApp {
 
     private final List<Student> students;
     private Scanner input;
     private final List<Course> courses; // Assuming you have a list of courses
+    private Grade grade;
 
     public GradeTrackerApp() {
         students = new ArrayList<>();
         courses = new ArrayList<>();
+        grade = new Grade();
         runGradeTracker();
     }
 
@@ -255,7 +255,7 @@ public class GradeTrackerApp {
             }
         }
 
-        double gpa = calculateGPA(grades);
+        double gpa = grade.calculateGPA(grades);
         System.out.printf("The GPA for student ID %d is: %.2f%n", studentId, gpa);
     }
 
@@ -363,14 +363,14 @@ public class GradeTrackerApp {
         reportBuilder.append("Courses Enrolled:\n");
 
 
-        double gpa = Grade.calculateGPA(courses);
+        double gpa = grade.calculateGPA(courses);
         reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa)).append("\n");
 
         return reportBuilder.toString();
     }
 
-    private static String getInformation(StringBuilder reportBuilder, Course course, double grade) {
-        String letterGrade = Grade.percentageToLetterGrade(grade);
+    private String getInformation(StringBuilder reportBuilder, Course course, double grade) {
+        String letterGrade = this.grade.percentageToLetterGrade(grade);
         reportBuilder.append(course.getCourseName())
                 .append(" (")
                 .append(course.getCourseCode())

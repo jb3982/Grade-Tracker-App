@@ -14,6 +14,7 @@ public class GradeTest {
     private Student student1;
     private Student student2;
     private Student student3;
+    private Grade grade1;
 
     @BeforeEach
     public void setUp() {
@@ -24,28 +25,28 @@ public class GradeTest {
         student1 = new Student("Jack", 1);
         student2 = new Student("Jones", 2);
         student3 = new Student("Jim", 3);
+        grade1 = new Grade();
     }
-
 
     @Test
     public void testPercentageToLetterGrade() {
-        assertEquals("A+", Grade.percentageToLetterGrade(95));
-        assertEquals("B", Grade.percentageToLetterGrade(70));
-        assertEquals("F", Grade.percentageToLetterGrade(49));
-        assertEquals("C", Grade.percentageToLetterGrade(60));
-        assertEquals("E", Grade.percentageToLetterGrade(50));
+        assertEquals("A+", grade1.percentageToLetterGrade(95));
+        assertEquals("B", grade1.percentageToLetterGrade(70));
+        assertEquals("F", grade1.percentageToLetterGrade(49));
+        assertEquals("C", grade1.percentageToLetterGrade(60));
+        assertEquals("E", grade1.percentageToLetterGrade(50));
     }
 
     @Test
     public void testLetterGradeToGradePoints() {
-        assertEquals(4.0, Grade.letterGradeToGradePoints("A+"));
-        assertEquals(2.0, Grade.letterGradeToGradePoints("C"));
-        assertEquals(0.0, Grade.letterGradeToGradePoints("F"));
-        assertEquals(3.3, Grade.letterGradeToGradePoints("A-"));
-        assertEquals(2.7, Grade.letterGradeToGradePoints("B"));
-        assertEquals(1.7, Grade.letterGradeToGradePoints("D+"));
-        assertEquals(1.0, Grade.letterGradeToGradePoints("E"));
-        assertEquals(0.0, Grade.letterGradeToGradePoints(""));
+        assertEquals(4.0, grade1.letterGradeToGradePoints("A+"));
+        assertEquals(2.0, grade1.letterGradeToGradePoints("C"));
+        assertEquals(0.0, grade1.letterGradeToGradePoints("F"));
+        assertEquals(3.3, grade1.letterGradeToGradePoints("A-"));
+        assertEquals(2.7, grade1.letterGradeToGradePoints("B"));
+        assertEquals(1.7, grade1.letterGradeToGradePoints("D+"));
+        assertEquals(1.0, grade1.letterGradeToGradePoints("E"));
+        assertEquals(0.0, grade1.letterGradeToGradePoints(""));
     }
 
     @Test
@@ -63,6 +64,6 @@ public class GradeTest {
 
         courses.add(course1);
 
-        assertEquals(3.65, Grade.calculateGPA(courses));
+        assertEquals(3.65, grade1.calculateGPA(courses));
     }
 }

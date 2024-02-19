@@ -3,9 +3,6 @@ package model;
 import java.time.LocalDate;
 import java.util.*;
 
-import static model.Grade.letterGradeToGradePoints;
-import static model.Grade.percentageToLetterGrade;
-
 public class Course {
 
     private final String courseCode;
@@ -18,6 +15,7 @@ public class Course {
     private final List<Integer> enrolledStudentsID;
     private final List<Double> studentGrades;
     private final double percentageGrade;
+    private Grade grade;
 
 
 
@@ -30,6 +28,7 @@ public class Course {
         this.percentageGrade = percentageGrade;
         this.studentGrades = new ArrayList<>();
         this.enrolledStudentsID = new ArrayList<>();
+        this.grade = new Grade();
     }
 
     // Getters
@@ -224,8 +223,8 @@ public class Course {
         if (!studentGrades.isEmpty()) {
             double totalGradePoints = 0.0;
             for (double grade : studentGrades) {
-                String letterGrade = percentageToLetterGrade(grade);
-                totalGradePoints += letterGradeToGradePoints(letterGrade);
+                String letterGrade = this.grade.percentageToLetterGrade(grade);
+                totalGradePoints += this.grade.letterGradeToGradePoints(letterGrade);
             }
             return totalGradePoints / studentGrades.size();
         }
@@ -236,7 +235,7 @@ public class Course {
     public List<String> calculateGradeDistribution(List<Double> studentGrades) {
         List<String> gradeDistribution = new ArrayList<>();
         for (double grade : studentGrades) {
-            String letterGrade = percentageToLetterGrade(grade);
+            String letterGrade = this.grade.percentageToLetterGrade(grade);
             gradeDistribution.add(letterGrade);
         }
         return gradeDistribution;
