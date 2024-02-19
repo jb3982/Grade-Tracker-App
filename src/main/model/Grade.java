@@ -54,11 +54,8 @@ public class Grade {
             totalPoints += gradePoints * credits;
             totalCredits += credits;
 
-            if (totalCredits > 0) {
-                return totalPoints / totalCredits;
-            }
         }
-        return 0.0;
+        return (totalPoints / totalCredits);
     }
 
 }

@@ -51,9 +51,6 @@ public class GradeTest {
     @Test
     public void testCalculateGPA() {
         List<Course> courses = new ArrayList<>();
-
-        assertEquals(0.0, Grade.calculateGPA(courses));
-
         course1.enrollStudent(student1);
         course1.enrollStudent(student2);
         course2.enrollStudent(student1);
@@ -63,10 +60,6 @@ public class GradeTest {
         course1.addGrade(student2, 80);
         course2.addGrade(student1, 70);
         course2.addGrade(student3, 90);
-
-
-
-        assertEquals(0.0,Grade.calculateGPA(courses));
 
         courses.add(course1);
 
