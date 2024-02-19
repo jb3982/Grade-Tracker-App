@@ -4,7 +4,6 @@ import java.util.List;
 
 public class Grade {
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static String percentageToLetterGrade(double percentage) {
         if (percentage >= 90) {
             return "A+";

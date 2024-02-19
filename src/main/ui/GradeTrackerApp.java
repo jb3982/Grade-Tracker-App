@@ -51,6 +51,7 @@ public class GradeTrackerApp {
         System.out.println("\tq -> quit");
     }
 
+
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void processCommand(String command) {
         switch (command) {
@@ -73,12 +74,15 @@ public class GradeTrackerApp {
                 doSummaryView();
                 break;
             case "q":
-                // Handle quitting the application
                 break;
             default:
-                System.out.println("Selection not valid. Please try again.");
-                break;
+                extracted();
         }
+    }
+
+    private static void extracted() {
+        System.out.println("Selection not valid. Please try again.");
+        return;
     }
 
     private void doAddStudent() {
@@ -94,39 +98,33 @@ public class GradeTrackerApp {
             System.out.println("A student with this ID already exists.");
             return;
         }
+
         Student newStudent = new Student(name, id);
 
         boolean addingCourses = true;
         while (addingCourses) {
-            System.out.println("Enter the course ID the student is enrolling in, or 'done' to finish:");
-            String inputCourseId = input.nextLine();
-            addingCourses = addCourses(newStudent, addingCourses, inputCourseId);
+            System.out.println("Enter the course code the student is enrolling in, or 'done' to finish:");
+            String inputCourseCode = input.nextLine();
+            addingCourses = addCoursesByCode(newStudent, addingCourses, inputCourseCode);
         }
 
-
-        newStudent = new Student(name, id);
         students.add(newStudent);
         System.out.println("New student added: " + name + " with ID " + id);
     }
 
-    private boolean addCourses(Student newStudent, boolean addingCourses, String inputCourseId) {
-        if ("done".equalsIgnoreCase(inputCourseId)) {
-            addingCourses = false;
+    private boolean addCoursesByCode(Student newStudent, boolean addingCourses, String inputCourseCode) {
+        if ("done".equalsIgnoreCase(inputCourseCode)) {
+            return false; // No more courses to add
         } else {
-            try {
-                int courseId = Integer.parseInt(inputCourseId);
-                Course course = findCourseById(courseId);
-                if (course != null) {
-                    newStudent.addCourse(course);
-                    System.out.println("Student enrolled in course: " + course.getCourseName());
-                } else {
-                    System.out.println("Course not found with ID: " + inputCourseId);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid course ID format. Please enter a numeric course ID.");
+            Course course = findCourseByCode(inputCourseCode);
+            if (course != null) {
+                newStudent.addCourse(course);
+                System.out.println("Student enrolled in course: " + course.getCourseName());
+            } else {
+                System.out.println("Course not found with code: " + inputCourseCode);
             }
         }
-        return addingCourses;
+        return true; // Continue adding courses
     }
 
 
@@ -253,11 +251,11 @@ public class GradeTrackerApp {
         for (Integer courseId : student.getEnrolledCourses()) {
             Course course = findCourseById(courseId);
             if (course != null) {
-                grades.add(course); // Assuming getGrade returns a Double
+                grades.add(course);
             }
         }
 
-        double gpa = calculateGPA(grades); // Assuming calculateGPA(List<Double> grades) exists in Grade
+        double gpa = calculateGPA(grades);
         System.out.printf("The GPA for student ID %d is: %.2f%n", studentId, gpa);
     }
 
@@ -302,8 +300,6 @@ public class GradeTrackerApp {
                     medianGrade,
                     stdDeviation));
         }
-
-        System.out.println("\nOther statistics can be added here as needed.");
     }
 
 
@@ -366,26 +362,8 @@ public class GradeTrackerApp {
         reportBuilder.append("Name: ").append(student.getName()).append("\n\n");
         reportBuilder.append("Courses Enrolled:\n");
 
-        double totalGradePoints = 0.0;
-        int totalCredits = 0;
 
-        // Assuming getEnrolledCourses returns a List<Integer> of course IDs
-        for (Integer courseId : student.getEnrolledCourses()) {
-            Course course = findCourseById(courseId);
-            if (course != null) {
-                // Get the letter grade for the course
-                double grade = course.getGrade(student); // Ensure this method exists and works as expected
-                String letterGrade = getInformation(reportBuilder, course, grade);
-
-                // Calculate grade points assuming letterGradeToGradePoints returns a Double
-                double gradePoints = Grade.letterGradeToGradePoints(letterGrade);
-                totalGradePoints += gradePoints * course.getCredits();
-                totalCredits += course.getCredits();
-            }
-        }
-
-        // GPA calculation assumes totalCredits is not zero
-        double gpa = totalCredits > 0 ? totalGradePoints / totalCredits : 0.0;
+        double gpa = Grade.calculateGPA(courses);
         reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa)).append("\n");
 
         return reportBuilder.toString();

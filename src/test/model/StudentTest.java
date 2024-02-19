@@ -14,13 +14,18 @@ public class StudentTest {
 
     @BeforeEach
     public void setUp() {
-        student = new Student("John Doe", 123);
+        student = new Student("John", 123);
         mathCourse = new Course("Math", "MATH101", "Algebra", 101, 3,
                 90);
         englishCourse = new Course("English", "ENG101", "Literature", 102, 4,
                 85);
         philosophyCourse = new Course("Philosophy", "PHIL220", "Logic", 103, 3,
                 95);
+    }
+
+    @Test
+    public void testGetName(){
+        assertEquals("John", student.getName());
     }
 
     @Test
