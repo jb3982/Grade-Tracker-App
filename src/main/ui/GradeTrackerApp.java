@@ -9,9 +9,9 @@ import static model.Grade.calculateGPA;
 
 public class GradeTrackerApp {
 
-    private List<Student> students;
+    private final List<Student> students;
     private Scanner input;
-    private List<Course> courses; // Assuming you have a list of courses
+    private final List<Course> courses; // Assuming you have a list of courses
 
     public GradeTrackerApp() {
         students = new ArrayList<>();

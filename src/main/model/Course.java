@@ -8,11 +8,11 @@ import static model.Grade.percentageToLetterGrade;
 
 public class Course {
 
-    private String courseCode;
-    private String courseName;
-    private String courseDescription;
-    private int courseID;
-    private int credits;
+    private final String courseCode;
+    private final String courseName;
+    private final String courseDescription;
+    private final int courseID;
+    private final int credits;
     private LocalDate startDate;
     private LocalDate endDate;
     private final List<Integer> enrolledStudentsID;
@@ -220,38 +220,19 @@ public class Course {
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
 
-    // Utilize the existing methods to convert percentage to grade points
-//    public double percentageToGradePoints(List<Double> studentGrades) {
-//        List<String> gradeDistribution = new ArrayList<>();
-//        for (double grade : studentGrades) {
-//            String letterGrade = percentageToLetterGrade(percentageGrade);
-//            gradeDistribution.add(letterGrade);
-//
-//            double gradePoint = letterGradeToGradePoints(gradeDistribution);
-//        }
-//
-//
-//        return letterGradeToGradePoints(letterGrade);
 //    }
     public double percentageToGradePoints(List<Double> studentGrades) {
-        if (studentGrades == null || studentGrades.isEmpty()) {
-            return 0.0;
+        if (!studentGrades.isEmpty()) {
+            double totalGradePoints = 0.0;
+            for (double grade : studentGrades) {
+                String letterGrade = percentageToLetterGrade(grade);
+                totalGradePoints += letterGradeToGradePoints(letterGrade);
+            }
+            return totalGradePoints / studentGrades.size();
         }
-        double totalGradePoints = 0.0;
-        for (double grade : studentGrades) {
-            String letterGrade = percentageToLetterGrade(grade);
-            totalGradePoints += letterGradeToGradePoints(letterGrade);
-        }
-        return totalGradePoints / studentGrades.size();
+        return 0.0;
     }
 
-//    public List<String> calculateGradeDistribution(List<Double> studentGrades) {
-//        List<String>  gradeDistribution = new ArrayList<>();
-//        for (int i = 0; i < studentGrades.size(); i++) {
-//           gradeDistribution.add(i);
-//        }
-//        return gradeDistribution;
-//    }
 
     public List<String> calculateGradeDistribution(List<Double> studentGrades) {
         List<String> gradeDistribution = new ArrayList<>();

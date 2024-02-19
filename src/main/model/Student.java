@@ -6,9 +6,9 @@ import java.util.Objects;
 
 public class Student {
 
-    private String name;
-    private int studentID;
-    private List<Integer> enrolledCourses;
+    private final String name;
+    private final int studentID;
+    private final List<Integer> enrolledCourses;
 
     // Represents a student having a name, id, and listOfCourses
     public Student(String name, int id) {

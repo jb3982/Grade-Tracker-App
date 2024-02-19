@@ -62,25 +62,4 @@ public class Grade {
         return 0.0;
     }
 
-//    public static double calculateGPA(List<Course> courses) {
-//        double totalPoints = 0.0;
-//        int totalCredits = 0;
-//        for (Course course : courses) {
-//            double gradePoints = course.percentageToGradePoints(course.getStudentGrades());
-//            int credits = course.getCredits();
-//            totalPoints += gradePoints * credits;
-//            totalCredits += credits;
-//        }
-//        // Return the calculated GPA after processing all courses
-//        return totalCredits > 0 ? totalPoints / totalCredits : 0.0;
-//    }
-
-
-//
-//    public static double applyGradeWeighting(double grade, int credits) {
-//        // This method can be adjusted based on how your institution applies weighting
-//        // Here's a simple example that just multiplies the grade by the credits
-//        return (grade / 100) * credits;
-//    }
-
 }
