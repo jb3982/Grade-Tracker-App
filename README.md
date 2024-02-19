@@ -27,8 +27,8 @@ My personal connection to this project is deeply rooted in the difficulties I've
 ---
 
 ### **User Stories:**
--  As a user, I want to be able to enter and save my coursework and exam grades for each class.
-- As a user, I want to input student grades after each assignment.
+- As a user, I want to be able to enter and save my coursework and exam grades for each class.
+- As a user, I want to input student grades after each course.
 - As a user, I want to be able to calculate and update a student's GPA automatically after recording a new grade.
-- As a user, I want to generate and export reports of student grades.
-- As a user, I want to access a summary view of grade distributions,to monitor academic standards and identify areas needing support.
+- As a user, I want to generate reports of student grades.
+- As a user, I want to access a summary view of grade distributions,to monitor academic standards.
