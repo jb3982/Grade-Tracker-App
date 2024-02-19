@@ -5,16 +5,16 @@ import java.util.*;
 
 public class Course {
 
-    private final String courseCode;
-    private final String courseName;
-    private final String courseDescription;
-    private final int courseID;
-    private final int credits;
+    private String courseCode;
+    private String courseName;
+    private String courseDescription;
+    private int courseID;
+    private int credits;
     private LocalDate startDate;
     private LocalDate endDate;
-    private final List<Integer> enrolledStudentsID;
-    private final List<Double> studentGrades;
-    private final double percentageGrade;
+    private List<Integer> enrolledStudentsID;
+    private List<Double> studentGrades;
+    private double percentageGrade;
     private Grade grade;
 
 
@@ -135,7 +135,7 @@ public class Course {
         Integer studentIdToUpdate = student.getStudentID();
         for (int i = 0; i < enrolledStudentsID.size(); i++) {
             if (Objects.equals(enrolledStudentsID.get(i), studentIdToUpdate)) {
-                studentGrades.add(i, grade);
+                this.studentGrades.add(i, grade);
             }
         }
     }

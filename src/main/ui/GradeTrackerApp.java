@@ -119,6 +119,7 @@ public class GradeTrackerApp {
             Course course = findCourseByCode(inputCourseCode);
             if (course != null) {
                 newStudent.addCourse(course);
+                course.enrollStudent(newStudent);
                 System.out.println("Student enrolled in course: " + course.getCourseName());
             } else {
                 System.out.println("Course not found with code: " + inputCourseCode);
@@ -360,8 +361,14 @@ public class GradeTrackerApp {
         StringBuilder reportBuilder = new StringBuilder();
         reportBuilder.append("Report for Student ID: ").append(student.getStudentID()).append("\n");
         reportBuilder.append("Name: ").append(student.getName()).append("\n\n");
-        reportBuilder.append("Courses Enrolled:\n");
+        reportBuilder.append("Courses Enrolled:");
 
+        for (Integer id : student.getEnrolledCourses()) {
+            Course currentCourse = findCourseById(id);
+            reportBuilder.append(currentCourse.getCourseName() + " | ");
+        }
+
+        reportBuilder.append("\n");
 
         double gpa = grade.calculateGPA(courses);
         reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa)).append("\n");
