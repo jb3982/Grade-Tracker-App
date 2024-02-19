@@ -1,6 +1,7 @@
 package ui;
 
 import model.Course;
+import model.Grade;
 import model.Student;
 
 import java.util.*;
@@ -93,10 +94,39 @@ public class GradeTrackerApp {
             System.out.println("A student with this ID already exists.");
             return;
         }
-
         Student newStudent = new Student(name, id);
+
+        boolean addingCourses = true;
+        while (addingCourses) {
+            System.out.println("Enter the course ID the student is enrolling in, or 'done' to finish:");
+            String inputCourseId = input.nextLine();
+            addingCourses = addCourses(newStudent, addingCourses, inputCourseId);
+        }
+
+
+        newStudent = new Student(name, id);
         students.add(newStudent);
         System.out.println("New student added: " + name + " with ID " + id);
+    }
+
+    private boolean addCourses(Student newStudent, boolean addingCourses, String inputCourseId) {
+        if ("done".equalsIgnoreCase(inputCourseId)) {
+            addingCourses = false;
+        } else {
+            try {
+                int courseId = Integer.parseInt(inputCourseId);
+                Course course = findCourseById(courseId);
+                if (course != null) {
+                    newStudent.addCourse(course);
+                    System.out.println("Student enrolled in course: " + course.getCourseName());
+                } else {
+                    System.out.println("Course not found with ID: " + inputCourseId);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid course ID format. Please enter a numeric course ID.");
+            }
+        }
+        return addingCourses;
     }
 
 
@@ -310,20 +340,66 @@ public class GradeTrackerApp {
         }
         return null;
     }
+    
+    
+    
+    
+
+//    private String generateReport(Student student) {
+//        StringBuilder reportBuilder = new StringBuilder();
+//        reportBuilder.append("Report for Student ID: ").append(student.getStudentID()).append("\n");
+//        reportBuilder.append("Name: ").append(student.getName()).append("\n\n");
+//        reportBuilder.append("Courses Enrolled:\n").append(student.getEnrolledCourses()).append("\n\n");
+//
+//
+//        List<Course> grades = new ArrayList<>();
+//        double gpa = calculateGPA(grades);
+//
+//        reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa));
+//
+//        return reportBuilder.toString();
+//    }
 
     private String generateReport(Student student) {
         StringBuilder reportBuilder = new StringBuilder();
         reportBuilder.append("Report for Student ID: ").append(student.getStudentID()).append("\n");
         reportBuilder.append("Name: ").append(student.getName()).append("\n\n");
-        reportBuilder.append("Courses Enrolled:\n").append(student.getEnrolledCourses()).append("\n\n");
+        reportBuilder.append("Courses Enrolled:\n");
 
+        double totalGradePoints = 0.0;
+        int totalCredits = 0;
 
-        List<Course> grades = new ArrayList<>();
-        double gpa = calculateGPA(grades);
+        // Assuming getEnrolledCourses returns a List<Integer> of course IDs
+        for (Integer courseId : student.getEnrolledCourses()) {
+            Course course = findCourseById(courseId);
+            if (course != null) {
+                // Get the letter grade for the course
+                double grade = course.getGrade(student); // Ensure this method exists and works as expected
+                String letterGrade = getInformation(reportBuilder, course, grade);
 
-        reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa));
+                // Calculate grade points assuming letterGradeToGradePoints returns a Double
+                double gradePoints = Grade.letterGradeToGradePoints(letterGrade);
+                totalGradePoints += gradePoints * course.getCredits();
+                totalCredits += course.getCredits();
+            }
+        }
+
+        // GPA calculation assumes totalCredits is not zero
+        double gpa = totalCredits > 0 ? totalGradePoints / totalCredits : 0.0;
+        reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa)).append("\n");
 
         return reportBuilder.toString();
+    }
+
+    private static String getInformation(StringBuilder reportBuilder, Course course, double grade) {
+        String letterGrade = Grade.percentageToLetterGrade(grade);
+        reportBuilder.append(course.getCourseName())
+                .append(" (")
+                .append(course.getCourseCode())
+                .append(") - Grade: ")
+                .append(letterGrade)
+                .append("\n");
+        return letterGrade;
     }
 
 

@@ -176,29 +176,28 @@ public class Course {
 
     // Calculate the median grade for the course
     public double calculateMedianGrade() {
-        int middle = studentGrades.size() / 2;
-        if (studentGrades.size() % 2 == 1) {
-            return studentGrades.get(middle);
-        } else {
-            return ((studentGrades.get(middle) + 1) + studentGrades.get(middle)) / 2.0;
+        if (!studentGrades.isEmpty()) {
+            int middle = studentGrades.size() / 2;
+            if (studentGrades.size() % 2 == 1) {
+                return studentGrades.get(middle);
+            } else {
+                return ((studentGrades.get(middle) + 1) + studentGrades.get(middle)) / 2.0;
+            }
         }
+        return 0;
     }
 
     // Calculate standard deviation of grades
     public double calculateStandardDeviation() {
-        double mean = calculateAverageGrade();
-        double sumSquaredDifferences = 0.0;
-//        for (Double diff : studentGrades) {
-//            studentGrades.set(studentGrades.indexOf(diff), diff - mean);
-//        }
-//        for (Double diffSquareSum : studentGrades) {
-//            studentGrades.set(studentGrades.indexOf(diffSquareSum), diffSquareSum * diffSquareSum);
-//            sumSquaredDifferences += diffSquareSum;
-//        }
-        for (double num : studentGrades) {
-            sumSquaredDifferences += Math.pow(num - mean, 2);
+        if (!studentGrades.isEmpty()) {
+            double mean = calculateAverageGrade();
+            double sumSquaredDifferences = 0.0;
+            for (double num : studentGrades) {
+                sumSquaredDifferences += Math.pow(num - mean, 2);
+            }
+            return Math.sqrt(sumSquaredDifferences / (studentGrades.size() - 1));
         }
-        return Math.sqrt(sumSquaredDifferences / (studentGrades.size() - 1));
+        return 0;
     }
 
 //    // Find students needing improvement (grade below a certain threshold)

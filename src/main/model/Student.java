@@ -42,6 +42,7 @@ public class Student {
      * Effects: Enrolls the student in a given course.
      */
     public void addCourse(Course course) {
+
         enrolledCourses.add(course.getCourseID());
     }
 

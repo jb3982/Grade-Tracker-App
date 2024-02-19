@@ -164,6 +164,9 @@ class CourseTest {
         course.enrollStudent(student2);
         course.enrollStudent(student3);
         course.enrollStudent(student4);
+
+        assertEquals(0, course.calculateMedianGrade());
+
         course.addGrade(student1, 90);
         course.addGrade(student2, 80);
         course.addGrade(student3, 70);
@@ -185,6 +188,9 @@ class CourseTest {
         course.enrollStudent(student3);
         course.enrollStudent(student4);
         course.enrollStudent(student5);
+
+        assertEquals(0, course.calculateStandardDeviation());
+
         course.addGrade(student1, 90);
         course.addGrade(student2, 80);
         course.addGrade(student3, 70);
@@ -223,23 +229,6 @@ class CourseTest {
 
         assertEquals(expectedLetterGrades, actualLetterGrades);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     public void testPercentageToGradePoints() {
