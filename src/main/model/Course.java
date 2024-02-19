@@ -58,13 +58,13 @@ public class Course {
         return courseID;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
+//    public LocalDate getStartDate() {
+//        return startDate;
+//    }
+//
+//    public LocalDate getEndDate() {
+//        return endDate;
+//    }
 
     public List<Integer> getEnrolledStudentsID() {
         if (!enrolledStudentsID.isEmpty()) {
@@ -80,38 +80,39 @@ public class Course {
 
     // Setters
 
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
+//    public void setCourseCode(String courseCode) {
+//        this.courseCode = courseCode;
+//    }
+//
+//    public void setCourseName(String courseName) {
+//        this.courseName = courseName;
+//    }
+//
+//    public void setCourseDescription(String courseDescription) {
+//        this.courseDescription = courseDescription;
+//    }
+//
+//    public void setCourseID(int courseID) {
+//        this.courseID = courseID;
+//    }
+//
+//    public void setCredits(int credits) {
+//        this.credits = credits;
+//    }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
-
-    public void setCourseDescription(String courseDescription) {
-        this.courseDescription = courseDescription;
-    }
-
-    public void setCourseID(int courseID) {
-        this.courseID = courseID;
-    }
-
-    public void setCredits(int credits) {
-        this.credits = credits;
-    }
-
-    public void setGetStartDate(LocalDate getStartDate) {
+    public void setStartDate(LocalDate getStartDate) {
         this.startDate = getStartDate;
     }
 
-    public void setGetEndDate(LocalDate getEndDate) {
+    public void setEndDate(LocalDate getEndDate) {
         this.endDate = getEndDate;
     }
 
 
     // Methods:
 
-    // Effects: enrolls student into the course
+    // Modifies: this
+    // Effects: enrolls student into the course if not already in the list
     public void enrollStudent(Student student) {
         if (!enrolledStudentsID.contains(student.getStudentID())) {
             enrolledStudentsID.add(student.getStudentID());
@@ -119,9 +120,10 @@ public class Course {
     }
 
 
-    // Effects: removes student from the course
+    // Modifies: This
+    // Effects: removes student from the course if present in the list.
     public void removeStudent(Student student) {
-        Integer studentIdToRemove = student.getStudentID(); // Assuming getStudentID() returns Integer
+        Integer studentIdToRemove = student.getStudentID();
         for (int i = 0; i < enrolledStudentsID.size(); i++) {
             if (Objects.equals(enrolledStudentsID.get(i), studentIdToRemove)) {
                 enrolledStudentsID.remove(studentIdToRemove);
@@ -135,15 +137,6 @@ public class Course {
         for (int i = 0; i < enrolledStudentsID.size(); i++) {
             if (Objects.equals(enrolledStudentsID.get(i), studentIdToUpdate)) {
                 studentGrades.add(i, grade);
-            }
-        }
-    }
-
-    public void updateGrade(Student student, double newGrade) {
-        Integer studentIdToUpdate = student.getStudentID();
-        for (int i = 0; i < enrolledStudentsID.size(); i++) {
-            if (Objects.equals(enrolledStudentsID.get(i), studentIdToUpdate)) {
-                studentGrades.add(i, newGrade);
             }
         }
     }

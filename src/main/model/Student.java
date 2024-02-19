@@ -17,13 +17,13 @@ public class Student {
         this.enrolledCourses = new ArrayList<>(); // list of enrolled courses
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStudentID(int studentID) {
-        this.studentID = studentID;
-    }
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public void setStudentID(int studentID) {
+//        this.studentID = studentID;
+//    }
 
     public String getName() {
         return name;

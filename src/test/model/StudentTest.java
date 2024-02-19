@@ -10,6 +10,7 @@ public class StudentTest {
     private Student student;
     private Course mathCourse;
     private Course englishCourse;
+    private Course philosophyCourse;
 
     @BeforeEach
     public void setUp() {
@@ -18,6 +19,8 @@ public class StudentTest {
                 90);
         englishCourse = new Course("English", "ENG101", "Literature", 102, 4,
                 85);
+        philosophyCourse = new Course("Philosophy", "PHIL220", "Logic", 103, 3,
+                95);
     }
 
     @Test
@@ -30,11 +33,16 @@ public class StudentTest {
     @Test
     public void testDropCourse() {
         student.addCourse(mathCourse);
+        student.addCourse(englishCourse);
 
         assertTrue(student.getEnrolledCourses().contains(mathCourse.getCourseID()));
 
         student.dropCourse(mathCourse);
         assertFalse(student.getEnrolledCourses().contains(mathCourse.getCourseID()));
+
+        int size = student.getEnrolledCourses().size();
+        student.dropCourse(philosophyCourse);
+        assertEquals(size, student.getEnrolledCourses().size());
     }
 
     @Test

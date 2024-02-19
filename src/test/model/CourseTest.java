@@ -26,7 +26,7 @@ class CourseTest {
     @BeforeEach
     public void setUp() {
         course = new Course("JAVA", "CS210", "Intro to Java", 210_01, 4,
-                0.0);
+                100.0);
         student1 = new Student("Jack", 1);
         student2 = new Student("Jones", 2);
         student3 = new Student("Jim", 3);
@@ -40,25 +40,38 @@ class CourseTest {
 
     }
 
+
     @Test
     public void testEnrollAndRemoveStudent() {
         course.enrollStudent(student1);
         assertTrue(course.getEnrolledStudentsID().contains(student1.getStudentID()));
+
+        assertEquals("JAVA", course.getCourseName());
+        assertEquals("CS210", course.getCourseCode());
+        assertEquals("Intro to Java", course.getCourseDescription());
+        assertEquals(210_01, course.getCourseID());
+        assertEquals(4, course.getCredits());
+        assertEquals(100.0, course.getPercentageGrade());
+
+        course.enrollStudent(student1);
+        assertEquals(1, course.getEnrolledStudentsID().size());
+
         course.removeStudent(student1);
         assertNull(course.getEnrolledStudentsID());
+
+        course.enrollStudent(student3);
+        course.removeStudent(student2);
+        assertTrue(course.getEnrolledStudentsID().contains(student3.getStudentID()));
     }
 
     @Test
-    public void testAddAndUpdateGrade() {
+    public void testAddGrade() {
         course.enrollStudent(student1);
         course.addGrade(student1, 90.0);
 
         double addedGrade = course.getGrade(student1);
         assertEquals(90.0, addedGrade, 0.01);
 
-        course.updateGrade(student1, 95.0);
-        double updatedGrade = course.getGrade(student1);
-        assertEquals(95.0, updatedGrade, 0.01);
     }
 
     @Test
@@ -71,26 +84,46 @@ class CourseTest {
     }
 
     @Test
+    public void testGetGrade_NotValidGrade() {
+        course.enrollStudent(student1);
+        course.enrollStudent(student2);
+        course.addGrade(student1, 95.0);
+
+        assertNotEquals(90.0, course.getGrade(student1));
+    }
+
+    @Test
     public void testGetGrade_NoGradeAssigned() {
         Double grade = course.getGrade(student1);
         assertNull(grade);
     }
 
+
     @Test
     public void testRemoveGrade() {
-            course.enrollStudent(student1);
-            course.addGrade(student1, 85.0);
+        course.enrollStudent(student1);
+        course.addGrade(student1, 85.0);
+        course.enrollStudent(student2);
+        course.addGrade(student2, 65.0);
 
-            assertEquals(85.0, course.getGrade(student1));
+        assertEquals(85.0, course.getGrade(student1));
+        assertEquals(65.0, course.getGrade(student2));
 
 
-            course.removeGrade(student1);
-            assertEquals(0.0, course.getGrade(student1));
+        int size = course.getStudentGrades().size();
+        course.removeGrade(student3);
+        assertEquals(size, course.getStudentGrades().size());
+
+        course.removeGrade(student1);
+        assertEquals(0.0, course.getGrade(student1));
 
     }
 
     @Test
     public void testCalculateAverageGrade() {
+
+        assertEquals(0.0, course.calculateAverageGrade());
+
         course.enrollStudent(student1);
         course.addGrade(student1, 90.0);
         course.enrollStudent(student2);
@@ -101,12 +134,20 @@ class CourseTest {
     }
 
     @Test
-    public void testIsCourseActive() {
-        LocalDate startDate = LocalDate.now().minusDays(10);
-        LocalDate endDate = LocalDate.now().plusDays(10);
-        course.setGetStartDate(startDate);
-        course.setGetEndDate(endDate);
+    public void testIsCourseActiveAndNotActive() {
+        LocalDate startDate_1 = LocalDate.now().minusDays(10);
+        LocalDate endDate_1 = LocalDate.now().plusDays(10);
+        course.setStartDate(startDate_1);
+        course.setEndDate(endDate_1);
         assertTrue(course.isCourseActive(LocalDate.now()));
+
+
+        LocalDate startDate_2 = LocalDate.now().minusDays(0);
+        LocalDate endDate_2 = LocalDate.now().plusDays(-1);
+        course.setStartDate(startDate_2);
+        course.setEndDate(endDate_2);
+        assertFalse(course.isCourseActive(LocalDate.now()));
+
     }
 
     @Test
@@ -177,6 +218,9 @@ class CourseTest {
 
     @Test
     public void testPercentageToGradePoints() {
+
+        assertEquals(0.0, course.percentageToGradePoints(course.getStudentGrades()));
+
         course.enrollStudent(student1);
         course.enrollStudent(student2);
         course.enrollStudent(student3);
