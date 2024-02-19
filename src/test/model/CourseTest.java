@@ -148,6 +148,14 @@ class CourseTest {
         course.setEndDate(endDate_2);
         assertFalse(course.isCourseActive(LocalDate.now()));
 
+
+        LocalDate startDate_3 = LocalDate.now().minusDays(-1);
+        LocalDate endDate_3 = LocalDate.now().plusDays(0);
+        course.setStartDate(startDate_3);
+        course.setEndDate(endDate_3);
+        assertFalse(course.isCourseActive(LocalDate.now()));
+
+
     }
 
     @Test
@@ -216,6 +224,23 @@ class CourseTest {
         assertEquals(expectedLetterGrades, actualLetterGrades);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Test
     public void testPercentageToGradePoints() {
 
@@ -226,6 +251,10 @@ class CourseTest {
         course.enrollStudent(student3);
         course.enrollStudent(student4);
         course.enrollStudent(student5);
+
+
+        assertEquals(0.0, course.percentageToGradePoints(course.getStudentGrades()));
+
         course.addGrade(student1, 95);
         course.addGrade(student2, 85);
         course.addGrade(student3, 75);
