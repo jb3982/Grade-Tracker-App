@@ -3,23 +3,37 @@ package ui;
 import model.Course;
 import model.Grade;
 import model.Student;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
+// Grade Tracker App console based UI
 public class GradeTrackerApp {
 
     private final List<Student> students;
     private Scanner input;
     private final List<Course> courses; // Assuming you have a list of courses
     private Grade grade;
+    private static final String JSON_STORE = "gradeTracker.json"; // File path for the JSON data
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     public GradeTrackerApp() {
         students = new ArrayList<>();
         courses = new ArrayList<>();
         grade = new Grade();
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
+//        loadData();
         runGradeTracker();
     }
 
+    // Effects: Run the app
     private void runGradeTracker() {
         boolean keepGoing = true;
         input = new Scanner(System.in);
@@ -40,18 +54,23 @@ public class GradeTrackerApp {
         System.out.println("\nGoodbye!");
     }
 
+    // Effects: displays the menu for the application
     private void displayMenu() {
         System.out.println("\nSelect from:");
-        System.out.println("\ta -> add student");
-        System.out.println("\tc -> add course");
-        System.out.println("\te -> enter grades");
-        System.out.println("\tg -> calculate GPA");
-        System.out.println("\tr -> generate report");
-        System.out.println("\ts -> summary view");
-        System.out.println("\tq -> quit");
+        System.out.println("\ta -> Add a student");
+        System.out.println("\tc -> Add a course");
+        System.out.println("\te -> Enter grades");
+        System.out.println("\tg -> Calculate GPA");
+        System.out.println("\tr -> Generate report");
+        System.out.println("\ts -> Summary view");
+        System.out.println("\tsv -> Save data");
+        System.out.println("\tld -> Load data");
+        System.out.println("\tq -> Quit");
     }
 
 
+    // Modifies: this
+    // Effects: process various commands
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void processCommand(String command) {
         switch (command) {
@@ -73,18 +92,92 @@ public class GradeTrackerApp {
             case "s":
                 doSummaryView();
                 break;
+            case "sv":
+                saveData();
+                break;
+            case "ld":
+                loadData();
+                break;
             case "q":
+                saveOnQuit();
                 break;
             default:
-                extracted();
+                printInvalidSelection();
         }
     }
 
-    private static void extracted() {
+    // Effects: prints "Selection not valid. Please try again." when nothing from the list of commands is selected.
+    private static void printInvalidSelection() {
         System.out.println("Selection not valid. Please try again.");
-        return;
     }
 
+    // EFFECTS: saves state to file on quit after user confirmation
+    private void saveOnQuit() {
+        System.out.println("Would you like to save your changes before quitting? (y/n)");
+        String inputString = input.nextLine().trim().toLowerCase();
+        if (inputString.equals("y")) {
+            saveData();
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads students and courses from file
+    private void loadData() {
+        try {
+            JsonReader.Pair<List<Student>, List<Course>> data = jsonReader.read();
+            students.clear();
+            courses.clear();
+            students.addAll(data.first);
+            courses.addAll(data.second);
+            System.out.println("Data loaded successfully from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
+    }
+
+//    // MODIFIES: this
+//    // EFFECTS: saves the current state to the JSON file
+//    private void saveData() {
+//        try {
+//            jsonWriter.open();
+//            jsonWriter.write(students, courses);
+//            jsonWriter.close();
+//            System.out.println("Data saved successfully to " + JSON_STORE);
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Unable to write to file: " + JSON_STORE);
+//        }
+//    }
+
+
+
+    private void saveData() {
+        try {
+            // Debugging: Check the data before saving
+            for (Course course : courses) {
+                System.out.println("Saving course: " + course.getCourseName());
+                System.out.println("Enrolled students IDs: " + course.getEnrolledStudentsID());
+                System.out.println("Student grades: " + course.getStudentGrades());
+            }
+
+            jsonWriter.open();
+            jsonWriter.write(students, courses);
+            jsonWriter.close();
+            System.out.println("Data saved successfully to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        } catch (Exception e) {
+            e.printStackTrace(); // Add this to catch any other exception that might occur
+        }
+    }
+
+
+
+
+
+
+    // Requires: name should be string, ID should be integer
+    // Modifies: this
+    // Effects: adds student with the given name, ID and list of enrolled courses.
     private void doAddStudent() {
         System.out.println("Enter the student's name:");
         String name = input.nextLine();
@@ -92,15 +185,11 @@ public class GradeTrackerApp {
         if (id == null) {
             return;
         }
-
-        // Check if a student with this ID already exists to prevent duplicates
         if (findStudentById(id) != null) {
             System.out.println("A student with this ID already exists.");
             return;
         }
-
         Student newStudent = new Student(name, id);
-
         boolean addingCourses = true;
         while (addingCourses) {
             System.out.println("Enter the course code the student is enrolling in, or 'done' to finish:");
@@ -112,9 +201,12 @@ public class GradeTrackerApp {
         System.out.println("New student added: " + name + " with ID " + id);
     }
 
+    // Requires: there should be a course
+    // Modifies: this
+    // Effects: adds the course to the student's list of enrolled courses.
     private boolean addCoursesByCode(Student newStudent, boolean addingCourses, String inputCourseCode) {
         if ("done".equalsIgnoreCase(inputCourseCode)) {
-            return false; // No more courses to add
+            return false;
         } else {
             Course course = findCourseByCode(inputCourseCode);
             if (course != null) {
@@ -125,10 +217,14 @@ public class GradeTrackerApp {
                 System.out.println("Course not found with code: " + inputCourseCode);
             }
         }
-        return true; // Continue adding courses
+        return true;
     }
 
 
+    // Requires: name should be string, code should be String, description should be String, credits should be integer,
+    //           percentage should a number and courseId should be integer.
+    // Modifies: this
+    // Effects: adds course with the given name, code, description, credits, percentage grade and courseId.
     private void doAddCourse() {
         System.out.println("Enter the course name:");
         String name = input.nextLine();
@@ -144,23 +240,20 @@ public class GradeTrackerApp {
         if (credits == null) {
             return;
         }
-
-        // The percentage grade needs to be defined or obtained from input
         Double percentageGrade = getGrade();
         if (percentageGrade == null) {
             return;
         }
-
-        // Check if a course with this code already exists to prevent duplicates
         if (findCourseByCode(code) != null) {
             System.out.println("A course with this code already exists.");
             return;
         }
-
         Integer courseID = getId();
         extractedInfo(name, code, description, credits, percentageGrade, courseID);
     }
 
+    // Effects: add the new course and prints "New course added:" followed by the name of the course and
+    //          code (in brackets).
     private void extractedInfo(String name, String code, String description, Integer credits, Double percentageGrade,
                                Integer courseID) {
         if (courseID == null) {
@@ -172,7 +265,10 @@ public class GradeTrackerApp {
         System.out.println("New course added: " + name + " (" + code + ")");
     }
 
+
+    // Effects: returns the courseID.
     private Integer getId() {
+        System.out.println("Enter the courseID:");
         int courseID;
         try {
             courseID = Integer.parseInt(input.nextLine());
@@ -188,8 +284,9 @@ public class GradeTrackerApp {
         return courseID;
     }
 
+    // Effects: returns the maximum course grade.
     private Double getGrade() {
-        System.out.println("Enter the overall percentage grade for the course:");
+        System.out.println("Enter the maximum percentage grade allowed for the course:");
         double percentageGrade;
         try {
             percentageGrade = Double.parseDouble(input.nextLine());
@@ -200,6 +297,7 @@ public class GradeTrackerApp {
         return percentageGrade;
     }
 
+    // Effects: returns the total credits of the course.
     private Integer getCredits(String x, String x1) {
         System.out.println(x);
         int credits;
@@ -213,35 +311,43 @@ public class GradeTrackerApp {
     }
 
 
+    // Requires: there should be a course and a student
+    // Modifies: this
+    // Effects: adds grade to the corresponding course in the selected student.
     private void doEnterGrades() {
-        System.out.println("Enter student ID:");
-        int studentId = Integer.parseInt(input.nextLine()); // Handle NumberFormatException appropriately
-        Student student = findStudentById(studentId);
-        if (student == null) {
-            System.out.println("Student not found!");
-            return;
-        }
+        try {
+            System.out.println("Enter student ID:");
+            int studentId = Integer.parseInt(input.nextLine());
+            Student student = findStudentById(studentId);
+            if (student == null) {
+                System.out.println("Student not found!");
+                return;
+            }
 
-        System.out.println("Enter course code:");
-        String courseCode = input.nextLine();
-        Course course = findCourseByCode(courseCode);
-        if (course == null) {
-            System.out.println("Course not found!");
-            return;
-        }
+            System.out.println("Enter course code:");
+            String courseCode = input.nextLine();
+            Course course = findCourseByCode(courseCode);
+            if (course == null) {
+                System.out.println("Course not found!");
+                return;
+            }
 
-        System.out.println("Enter grade:");
-        double grade = Double.parseDouble(input.nextLine()); // Handle NumberFormatException appropriately
-        course.addGrade(student, grade);
+            System.out.println("Enter grade:");
+            double grade = Double.parseDouble(input.nextLine());
+            course.addGrade(student, grade);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. PLease enter a valid number.");
+        }
     }
 
-
+    // Requires: there should be a student and a course.
+    // Modifies: this
+    // Effects: calculates GPA for the given student over his all enrolled courses.
     private void doCalculateGPA() {
         System.out.println("Enter student ID to calculate GPA:");
         int studentId = input.nextInt();
         input.nextLine();
 
-        // Retrieve the student and their courses
         Student student = findStudentById(studentId);
         if (student == null) {
             System.out.println("No student found with ID: " + studentId);
@@ -261,29 +367,30 @@ public class GradeTrackerApp {
     }
 
 
-
-    // Generates a report of grades for a student
+    // Requires: there should be a student and a course.
+    // Modifies: this
+    // Effects: generates report of the given student.
     private void doGenerateReport() {
         System.out.println("Enter student ID:");
-        int studentId = Integer.parseInt(input.nextLine()); // Handle NumberFormatException appropriately
+        int studentId = Integer.parseInt(input.nextLine());
         Student student = findStudentById(studentId);
         if (student == null) {
             System.out.println("Student not found!");
             return;
         }
 
-        // Assume generateReport method exists in Student or Course class
         String report = generateReport(student);
         System.out.println(report);
     }
 
 
-
-    // Shows a summary view of grade distributions for a course
+    // Requires: there should be a student and a course.
+    // Modifies: this
+    // Effects: Shows the summary view of grade distributions for a all courses
     private void doSummaryView() {
         // Prints the header for the summary
-        System.out.println("Summary of Grades:");
-        System.out.println(String.format("%-10s %-30s %-10s %-10s%n", "Course ID", "Course Name", "Credits",
+        System.out.println("Summary of Courses:");
+        System.out.println(String.format("%-10s %-30s %-10s %-15s %-15s %-15s", "Course ID", "Course Name", "Credits",
                 "Average Grade","Median Grade", "Std Deviation"));
 
         // Loops through all courses and print their details
@@ -293,7 +400,7 @@ public class GradeTrackerApp {
             double stdDeviation = course.calculateStandardDeviation();
 
             // Format the output for better readability
-            System.out.println(String.format("%-10d %-30s %-10d %-10.2f%n",
+            System.out.println(String.format("%-10d %-30s %-10d %-15.2f %-15.2f %-15.2f",
                     course.getCourseID(),
                     course.getCourseName(),
                     course.getCredits(),
@@ -304,13 +411,9 @@ public class GradeTrackerApp {
     }
 
 
+    // HELPERS:
 
-
-
-
-
-
-
+    // Effects: finds the student using ID
     private Student findStudentById(int id) {
         for (Student student : students) {
             if (student.getStudentID() == id) {
@@ -320,6 +423,7 @@ public class GradeTrackerApp {
         return null;
     }
 
+    // Effects: finds the course using course ID
     private Course findCourseById(int id) {
         for (Course course : courses) {
             if (course.getCourseID() == id) {
@@ -329,6 +433,7 @@ public class GradeTrackerApp {
         return null;
     }
 
+    // Effects: finds the student using course code
     private Course findCourseByCode(String code) {
         for (Course course : courses) {
             if (course.getCourseCode().equals(code)) {
@@ -337,46 +442,39 @@ public class GradeTrackerApp {
         }
         return null;
     }
-    
-    
-    
-    
 
-//    private String generateReport(Student student) {
-//        StringBuilder reportBuilder = new StringBuilder();
-//        reportBuilder.append("Report for Student ID: ").append(student.getStudentID()).append("\n");
-//        reportBuilder.append("Name: ").append(student.getName()).append("\n\n");
-//        reportBuilder.append("Courses Enrolled:\n").append(student.getEnrolledCourses()).append("\n\n");
-//
-//
-//        List<Course> grades = new ArrayList<>();
-//        double gpa = calculateGPA(grades);
-//
-//        reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa));
-//
-//        return reportBuilder.toString();
-//    }
-
+    // Effets: Generates a collective report on the given student.
     private String generateReport(Student student) {
         StringBuilder reportBuilder = new StringBuilder();
         reportBuilder.append("Report for Student ID: ").append(student.getStudentID()).append("\n");
         reportBuilder.append("Name: ").append(student.getName()).append("\n\n");
-        reportBuilder.append("Courses Enrolled:");
+        reportBuilder.append("Courses Enrolled:\n");
 
-        for (Integer id : student.getEnrolledCourses()) {
-            Course currentCourse = findCourseById(id);
-            reportBuilder.append(currentCourse.getCourseName() + " | ");
+        for (Integer courseId : student.getEnrolledCourses()) {
+            Course currentCourse = findCourseById(courseId);
+            Double courseGrade = currentCourse.getGrade(student);
+            if (currentCourse != null) {
+                if (courseGrade != null) {
+                    getInformation(reportBuilder, currentCourse, courseGrade);
+                } else {
+                    reportBuilder.append(currentCourse.getCourseName())
+                            .append(" (")
+                            .append(currentCourse.getCourseCode())
+                            .append(") - Grade: Not available\n");
+                }
+
+            }
         }
 
-        reportBuilder.append("\n");
-
-        double gpa = grade.calculateGPA(courses);
+        double gpa = grade.calculateGPA(getStudentCourses(student));
         reportBuilder.append("\nCumulative GPA: ").append(String.format("%.2f", gpa)).append("\n");
 
         return reportBuilder.toString();
     }
 
-    private String getInformation(StringBuilder reportBuilder, Course course, double grade) {
+    // Modifies: reportBuilder
+    // Effects: appends course information and letter grade to reportBuilder
+    private void getInformation(StringBuilder reportBuilder, Course course, double grade) {
         String letterGrade = this.grade.percentageToLetterGrade(grade);
         reportBuilder.append(course.getCourseName())
                 .append(" (")
@@ -384,8 +482,18 @@ public class GradeTrackerApp {
                 .append(") - Grade: ")
                 .append(letterGrade)
                 .append("\n");
-        return letterGrade;
     }
 
+    // Helper method to get List of Course objects from a student's enrolled courses IDs
+    private List<Course> getStudentCourses(Student student) {
+        List<Course> studentCourses = new ArrayList<>();
+        for (Integer courseId : student.getEnrolledCourses()) {
+            Course course = findCourseById(courseId);
+            if (course != null) {
+                studentCourses.add(course);
+            }
+        }
+        return studentCourses;
+    }
 
 }

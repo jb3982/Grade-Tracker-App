@@ -1,8 +1,18 @@
 package model;
 
-import java.time.LocalDate;
-import java.util.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+
+/*
+ * Represents course. A course has a name, code, description, courseId, credits, and percentageGrade.
+ */
 public class Course {
 
     private String courseCode;
@@ -18,7 +28,7 @@ public class Course {
     private Grade grade;
 
 
-
+    // Effects : Constructs a Course with name, code, description, courseId, credits, and percentageGrade.
     public Course(String name, String code, String description, int courseID, int credits, double percentageGrade) {
         this.courseCode = code;
         this.courseName = name;
@@ -33,26 +43,32 @@ public class Course {
 
     // Getters
 
+    // Effects: returns the code of the course.
     public String getCourseCode() {
         return courseCode;
     }
 
+    // Effects: returns the name of the course.
     public String getCourseName() {
         return courseName;
     }
 
+    // Effects: returns the Description of the course.
     public String getCourseDescription() {
         return courseDescription;
     }
 
+    // Effects: returns the number of credits of the course.
     public int getCredits() {
         return credits;
     }
 
+    // Effects: returns the maximum grade (in percentage) attainable of the course.
     public double getPercentageGrade() {
         return percentageGrade;
     }
 
+    // Effects: returns the unique ID of the course.
     public int getCourseID() {
         return courseID;
     }
@@ -60,18 +76,17 @@ public class Course {
 //    public LocalDate getStartDate() {
 //        return startDate;
 //    }
-//
+
 //    public LocalDate getEndDate() {
 //        return endDate;
 //    }
 
+    // Effects: returns list of students enrolled in the course.
     public List<Integer> getEnrolledStudentsID() {
-        if (!enrolledStudentsID.isEmpty()) {
-            return enrolledStudentsID;
-        }
-        return null;
+        return enrolledStudentsID;
     }
 
+    // Effects: returns list of received grade of the enrolled students in the course.
     public List<Double> getStudentGrades() {
         return studentGrades;
     }
@@ -99,13 +114,20 @@ public class Course {
 //        this.credits = credits;
 //    }
 
+    // Effects: returns the starting date of the course.
     public void setStartDate(LocalDate getStartDate) {
         this.startDate = getStartDate;
     }
 
+    // Effects: returns the ending date of the course.
     public void setEndDate(LocalDate getEndDate) {
         this.endDate = getEndDate;
     }
+
+
+
+
+
 
 
     // Methods:
@@ -119,7 +141,7 @@ public class Course {
     }
 
 
-    // Modifies: This
+    // Modifies: this
     // Effects: removes student from the course if present in the list.
     public void removeStudent(Student student) {
         Integer studentIdToRemove = student.getStudentID();
@@ -130,6 +152,7 @@ public class Course {
         }
     }
 
+    // Modifies: this
     // Effects: if student is in the list, adds corresponding grade to the student.
     public void addGrade(Student student, double grade) {
         Integer studentIdToUpdate = student.getStudentID();
@@ -140,6 +163,7 @@ public class Course {
         }
     }
 
+    // Modifies: this
     // Effects: removes the corresponding grade of the student.
     public void removeGrade(Student student) {
         Integer studentIdToUpdate = student.getStudentID();
@@ -149,6 +173,7 @@ public class Course {
             }
         }
     }
+
 
     // Effects: if student grade is present, get the corresponding course grade
     public Double getGrade(Student student) {
@@ -161,6 +186,8 @@ public class Course {
         return null;
     }
 
+
+    // Effects: Calculates the average grade of the course.
     public double calculateAverageGrade() {
         if (!studentGrades.isEmpty()) {
             double sum = 0.0;
@@ -173,20 +200,38 @@ public class Course {
         }
     }
 
-    // Calculate the median grade for the course
+    // Effects: Calculates the median grade of the course.
     public double calculateMedianGrade() {
         if (!studentGrades.isEmpty()) {
-            int middle = studentGrades.size() / 2;
-            if (studentGrades.size() % 2 == 1) {
-                return studentGrades.get(middle);
+
+            List<Double> sortedGrades = new ArrayList<>(studentGrades);
+            Collections.sort(sortedGrades);
+            int middle = sortedGrades.size() / 2;
+
+            if (sortedGrades.size() % 2 == 1) {
+                return sortedGrades.get(middle);
             } else {
-                return ((studentGrades.get(middle) + 1) + studentGrades.get(middle)) / 2.0;
+                return (sortedGrades.get(middle - 1) + sortedGrades.get(middle)) / 2.0;
             }
         }
         return 0;
     }
 
-    // Calculate standard deviation of grades
+
+//    // Effects: Calculates the median grade of the course.
+//    public double calculateMedianGrade() {
+//        if (!studentGrades.isEmpty()) {
+//            int middle = studentGrades.size() / 2;
+//            if (studentGrades.size() % 2 == 1) {
+//                return studentGrades.get(middle);
+//            } else {
+//                return ((studentGrades.get(middle) + 1) + studentGrades.get(middle)) / 2.0;
+//            }
+//        }
+//        return 0;
+//    }
+
+    // Effects: Calculates standard deviation of grades in the course.
     public double calculateStandardDeviation() {
         if (!studentGrades.isEmpty()) {
             double mean = calculateAverageGrade();
@@ -199,7 +244,7 @@ public class Course {
         return 0;
     }
 
-//    // Find students needing improvement (grade below a certain threshold)
+//    // Effects: Find students needing improvement (grade below a certain threshold)
 //    public List<Student> findStudentsNeedingImprovement(double threshold) {
 //        List<Integer> studentsNeedingImprovement = new ArrayList<>();
 //        studentGrades.forEach((student, grade) -> {
@@ -218,20 +263,21 @@ public class Course {
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
 
-//    }
+    // Effects: Converts percentage grade to GPA point grades.
     public double percentageToGradePoints(List<Double> studentGrades) {
         if (!studentGrades.isEmpty()) {
-            double totalGradePoints = 0.0;
+            double gradePoint = 0.0;
             for (double grade : studentGrades) {
                 String letterGrade = this.grade.percentageToLetterGrade(grade);
-                totalGradePoints += this.grade.letterGradeToGradePoints(letterGrade);
+                gradePoint = this.grade.letterGradeToGradePoints(letterGrade);
             }
-            return totalGradePoints / studentGrades.size();
+            return gradePoint;
         }
         return 0.0;
     }
 
 
+    //Effects: returns a list of letter grades, converted from percentage grade.
     public List<String> calculateGradeDistribution(List<Double> studentGrades) {
         List<String> gradeDistribution = new ArrayList<>();
         for (double grade : studentGrades) {
@@ -239,6 +285,29 @@ public class Course {
             gradeDistribution.add(letterGrade);
         }
         return gradeDistribution;
+    }
+
+
+    // EFFECTS: returns this as JSON object
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("courseCode", courseCode);
+        json.put("courseName", courseName);
+        json.put("courseDescription", courseDescription);
+        json.put("courseID", courseID);
+        json.put("credits", credits);
+        json.put("percentageGrade", percentageGrade);
+        JSONArray enrolledStudentsJsonArray = new JSONArray();
+        for (Integer studentID : enrolledStudentsID) {
+            enrolledStudentsJsonArray.put(studentID);
+        }
+        json.put("enrolledStudentsID", enrolledStudentsJsonArray);
+        JSONArray studentGradesJsonArray = new JSONArray();
+        for (Double grade : studentGrades) {
+            studentGradesJsonArray.put(grade);
+        }
+        json.put("studentGrades", studentGradesJsonArray);
+        return json;
     }
 }
 

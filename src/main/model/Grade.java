@@ -4,6 +4,8 @@ import java.util.List;
 
 public class Grade {
 
+    // Modifies: this
+    // Effects: returns a string after converting percentage grade to letter grade.
     public String percentageToLetterGrade(double percentage) {
         if (percentage >= 90) {
             return "A+";
@@ -28,6 +30,8 @@ public class Grade {
         }
     }
 
+    // Modifies: this
+    // Effects: converts and returns grade point from percentage grade.
     public double letterGradeToGradePoints(String letterGrade) {
         switch (letterGrade) {
             case "A+": return 4.0;
@@ -45,13 +49,16 @@ public class Grade {
         }
     }
 
+
+
+    // Effects: Calculates the GPA of list of courses.
     public double calculateGPA(List<Course> courses) {
         double totalPoints = 0.0;
         int totalCredits = 0;
         for (Course course : courses) {
-            double gradePoints = course.percentageToGradePoints(course.getStudentGrades());
+            double gradePoint = course.percentageToGradePoints(course.getStudentGrades());
             int credits = course.getCredits();
-            totalPoints += gradePoints * credits;
+            totalPoints += gradePoint * credits;
             totalCredits += credits;
 
         }

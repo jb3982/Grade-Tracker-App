@@ -1,5 +1,8 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,15 +15,14 @@ public class Student {
 
     // Represents a student having a name, id, and listOfCourses
     public Student(String name, int id) {
-        this.name = name;                       // student name
-        this.studentID = id;                    // student Id
+        this.name = name; // student name
+        this.studentID = id; // student Id
         this.enrolledCourses = new ArrayList<>(); // list of enrolled courses
     }
 
 //    public void setName(String name) {
 //        this.name = name;
 //    }
-//
 //    public void setStudentID(int studentID) {
 //        this.studentID = studentID;
 //    }
@@ -59,5 +61,18 @@ public class Student {
         }
     }
 
+
+    // EFFECTS: returns this as JSON object
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("studentID", studentID);
+        JSONArray enrolledCoursesJsonArray = new JSONArray();
+        for (Integer courseID : enrolledCourses) {
+            enrolledCoursesJsonArray.put(courseID);
+        }
+        json.put("enrolledCourses", enrolledCoursesJsonArray);
+        return json;
+    }
 
 }

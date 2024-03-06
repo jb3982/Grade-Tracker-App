@@ -40,13 +40,16 @@ public class GradeTest {
     @Test
     public void testLetterGradeToGradePoints() {
         assertEquals(4.0, grade1.letterGradeToGradePoints("A+"));
-        assertEquals(2.0, grade1.letterGradeToGradePoints("C"));
-        assertEquals(0.0, grade1.letterGradeToGradePoints("F"));
+        assertEquals(3.7, grade1.letterGradeToGradePoints("A"));
         assertEquals(3.3, grade1.letterGradeToGradePoints("A-"));
+        assertEquals(3.0, grade1.letterGradeToGradePoints("B+"));
         assertEquals(2.7, grade1.letterGradeToGradePoints("B"));
+        assertEquals(2.3, grade1.letterGradeToGradePoints("C+"));
+        assertEquals(2.0, grade1.letterGradeToGradePoints("C"));
         assertEquals(1.7, grade1.letterGradeToGradePoints("D+"));
+        assertEquals(1.3, grade1.letterGradeToGradePoints("D"));
         assertEquals(1.0, grade1.letterGradeToGradePoints("E"));
-        assertEquals(0.0, grade1.letterGradeToGradePoints(""));
+        assertEquals(0.0, grade1.letterGradeToGradePoints("F"));
     }
 
     @Test

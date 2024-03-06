@@ -27,8 +27,10 @@ My personal connection to this project is deeply rooted in the difficulties I've
 ---
 
 ### **User Stories:**
-- As a user, I want to be able to enter and save my coursework and exam grades for each class.
-- As a user, I want to input student grades after each course.
-- As a user, I want to be able to calculate and update a student's GPA automatically after recording a new grade.
-- As a user, I want to generate reports of student grades.
-- As a user, I want to access a summary view of grade distributions,to monitor academic standards.
+- As a user, I need the capability to enter, store, and later retrieve the coursework and examination grades for each class to ensure that no academic data is lost between sessions. 
+- As a user, I require a system that allows me to record student grades immediately following the completion of a course to maintain up-to-date academic records.
+- As a user, I seek the functionality to automatically calculate and update a student's GPA as soon as new grades are entered to reflect their current academic standing.
+- As a user, I wish to generate comprehensive reports of student grades, enabling a detailed overview of individual academic performance.
+- As a user, I desire access to a summarized view of grade distributions to effectively monitor and adhere to academic standards.
+- As a user, I would like to be prompted to save the application's state to a file when I choose to exit, giving me the control to decide whether or not to save the changes made during the session.
+- As a user, upon launching the application, I wish to be presented with the option to load the grade tracker's state from a previously saved file, allowing me to resume work seamlessly from where I last left off.

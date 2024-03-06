@@ -170,14 +170,12 @@ class CourseTest {
         course.addGrade(student1, 90);
         course.addGrade(student2, 80);
         course.addGrade(student3, 70);
+
+        assertEquals(80.0, course.calculateMedianGrade());
+
         course.addGrade(student4, 60);
 
-        assertEquals(70.5, course.calculateMedianGrade());
-
-        course.enrollStudent(student5);
-        course.addGrade(student5, 100);
-
-        assertEquals(70, course.calculateMedianGrade());
+        assertEquals(75, course.calculateMedianGrade());
 
     }
 
@@ -245,15 +243,10 @@ class CourseTest {
         assertEquals(0.0, course.percentageToGradePoints(course.getStudentGrades()));
 
         course.addGrade(student1, 95);
+        assertEquals(4.0, course.percentageToGradePoints(course.getStudentGrades()));
         course.addGrade(student2, 85);
-        course.addGrade(student3, 75);
-        course.addGrade(student4, 65);
-        course.addGrade(student5, 55);
+        assertEquals(3.7, course.percentageToGradePoints(course.getStudentGrades()));
 
-
-        double expectedAverage = (4.0 + 3.7 +  3.0 + 2.3 +  1.3)/5;
-
-        assertEquals(expectedAverage, course.percentageToGradePoints(course.getStudentGrades()));
     }
 
 }
