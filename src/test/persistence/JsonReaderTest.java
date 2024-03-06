@@ -141,6 +141,28 @@ class JsonReaderTest {
     }
 
     @Test
+    void testParseStudentWithNonExistentCourse() {
+        // Assume JsonReader has a public constructor and parseStudent is made package-private for testing
+        JsonReader jsonReader = new JsonReader(""); // The path is irrelevant for this test
+
+        String studentJsonString = "{"
+                + "\"name\":\"Test Student\","
+                + "\"studentID\":123,"
+                + "\"enrolledCourses\":[999]" // Use a non-existent course ID to trigger the branch
+                + "}";
+        JSONObject studentJson = new JSONObject(studentJsonString);
+
+        List<Course> courses = new ArrayList<>(); // empty list simulating no courses found
+
+        // Act
+        Student parsedStudent = jsonReader.parseStudent(studentJson, courses);
+
+        // Assert
+        assertNotNull(parsedStudent, "Parsed student should not be null");
+        assertTrue(parsedStudent.getEnrolledCourses().isEmpty(), "Enrolled courses list should be empty since the course ID doesn't exist");
+    }
+
+    @Test
     void testExtractStudentGrades() {
         try {
             // Setup
@@ -189,6 +211,27 @@ class JsonReaderTest {
         } catch (Exception e) {
             fail("An unexpected exception occurred: " + e.getMessage());
         }
+    }
+
+    @Test
+    void testExtractStudentGradesWithInvalidType() {
+        JSONObject courseJson = new JSONObject();
+        JSONArray gradesArray = new JSONArray();
+        // Add an invalid grade type to trigger the IllegalArgumentException
+        gradesArray.put("A+");
+        courseJson.put("studentGrades", gradesArray);
+
+        Course course = new Course("Test Course", "TC101", "Test Description", 101, 4, 85.0);
+
+        // Expect the IllegalArgumentException when a non-numeric grade is processed
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            JsonReader.extractStudentGrades(courseJson, course);
+        });
+
+        // Verify that the exception message is as expected
+        String expectedMessage = "Invalid grade type in JSON";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage), "Exception message should contain the expected text");
     }
 
     @Test
@@ -244,6 +287,22 @@ class JsonReaderTest {
             assertTrue(actualMessage.contains(expectedMessage), "Exception message should contain the expected message");
         }
 
+    }
+
+    @Test
+    void testFindCourseByIdNonExistent() {
+        // Assume JsonReader has a public constructor and findCourseById is made package-private for testing
+        JsonReader jsonReader = new JsonReader(""); // The path is irrelevant for this test
+
+        List<Course> courses = new ArrayList<>();
+        courses.add(new Course("Test Course", "TC101", "Test Description", 101, 4, 85.0));
+
+        // Act
+        // Call the method with a courseID that does not exist in the list
+        Course course = jsonReader.findCourseById(999, courses);
+
+        // Assert
+        assertNull(course, "Should return null for a non-existent courseID");
     }
 
     @AfterEach

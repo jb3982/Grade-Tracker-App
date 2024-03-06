@@ -59,7 +59,7 @@ public class JsonReader {
     }
 
     // EFFECTS: parses student from JSON object and returns it
-    private Student parseStudent(JSONObject studentJson, List<Course> courses) {
+    public Student parseStudent(JSONObject studentJson, List<Course> courses) {
         String name = studentJson.getString("name");
         int studentID = studentJson.getInt("studentID");
         Student student = new Student(name, studentID);
@@ -89,7 +89,7 @@ public class JsonReader {
 
 
     // Effects: finds course using the course ID in the list of Courses
-    private Course findCourseById(int courseId, List<Course> courses) {
+    public Course findCourseById(int courseId, List<Course> courses) {
         for (Course course : courses) {
             if (course.getCourseID() == courseId) {
                 return course;
