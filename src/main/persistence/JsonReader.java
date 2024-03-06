@@ -111,18 +111,20 @@ public class JsonReader {
         Course course = new Course(courseName, courseCode, courseDescription, courseID, credits, percentageGrade);
 
         // Enrolled students ID list parsing
-        JSONArray enrolledStudentsIdJsonArray = courseJson.optJSONArray("enrolledStudentsID");
-        System.out.println("Enrolled students IDs: "
-                + (enrolledStudentsIdJsonArray != null ? enrolledStudentsIdJsonArray.toString() : "null"));
-
-        if (enrolledStudentsIdJsonArray != null) {
-            for (Object studentIdObj : enrolledStudentsIdJsonArray) {
-                int studentId = (Integer) studentIdObj;
-                course.getEnrolledStudentsID().add(studentId);
-            }
-        }
+        extractEnrolledStudentsID(courseJson, course);
 
         // Student grades list parsing
+        extractStudentGrades(courseJson, course);
+        // Print the loaded course details
+        System.out.println("Loaded course: " + course.getCourseName());
+        System.out.println("Enrolled students after load: " + course.getEnrolledStudentsID());
+        System.out.println("Student grades after load: " + course.getStudentGrades());
+
+
+        return course;
+    }
+
+    private static void extractStudentGrades(JSONObject courseJson, Course course) {
         JSONArray studentGradesJsonArray = courseJson.optJSONArray("studentGrades");
         System.out.println("Student grades: "
                 + (studentGradesJsonArray != null ? studentGradesJsonArray.toString() : "null"));
@@ -140,13 +142,19 @@ public class JsonReader {
                 course.getStudentGrades().add(grade);
             }
         }
-        // Print the loaded course details
-        System.out.println("Loaded course: " + course.getCourseName());
-        System.out.println("Enrolled students after load: " + course.getEnrolledStudentsID());
-        System.out.println("Student grades after load: " + course.getStudentGrades());
+    }
 
+    private static void extractEnrolledStudentsID(JSONObject courseJson, Course course) {
+        JSONArray enrolledStudentsIdJsonArray = courseJson.optJSONArray("enrolledStudentsID");
+        System.out.println("Enrolled students IDs: "
+                + (enrolledStudentsIdJsonArray != null ? enrolledStudentsIdJsonArray.toString() : "null"));
 
-        return course;
+        if (enrolledStudentsIdJsonArray != null) {
+            for (Object studentIdObj : enrolledStudentsIdJsonArray) {
+                int studentId = (Integer) studentIdObj;
+                course.getEnrolledStudentsID().add(studentId);
+            }
+        }
     }
 
     // A simple Pair class
