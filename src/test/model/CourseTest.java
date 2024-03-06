@@ -1,9 +1,12 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,7 +43,6 @@ class CourseTest {
 
     }
 
-
     @Test
     public void testEnrollAndRemoveStudent() {
         course.enrollStudent(student1);
@@ -57,11 +59,26 @@ class CourseTest {
         assertEquals(1, course.getEnrolledStudentsID().size());
 
         course.removeStudent(student1);
-        assertNull(course.getEnrolledStudentsID());
+        assertEquals(new ArrayList<Integer>(), course.getEnrolledStudentsID());
 
         course.enrollStudent(student3);
         course.removeStudent(student2);
         assertTrue(course.getEnrolledStudentsID().contains(student3.getStudentID()));
+    }
+
+    @Test
+    public void testRemoveStudent_NotEnrolled() {
+        // Attempt to remove a student who is not enrolled should not modify the enrolledStudentsID list
+        int initialSize = course.getEnrolledStudentsID().size();
+
+        // Make sure student2 is not enrolled
+        assertFalse(course.getEnrolledStudentsID().contains(student2.getStudentID()));
+
+        // Attempt to remove student2, who is not enrolled
+        course.removeStudent(student2);
+
+        // The size of the enrolledStudentsID list should not have changed
+        assertEquals(initialSize, course.getEnrolledStudentsID().size());
     }
 
     @Test
@@ -97,7 +114,6 @@ class CourseTest {
         Double grade = course.getGrade(student1);
         assertNull(grade);
     }
-
 
     @Test
     public void testRemoveGrade() {
@@ -247,6 +263,31 @@ class CourseTest {
         course.addGrade(student2, 85);
         assertEquals(3.7, course.percentageToGradePoints(course.getStudentGrades()));
 
+    }
+
+    @Test
+    public void testToJson() {
+        // Arrange
+        course.enrollStudent(student1);
+        course.enrollStudent(student2);
+        course.addGrade(student1, 90.0);
+        course.addGrade(student2, 80.0);
+
+        // Act
+        JSONObject json = course.toJson();
+
+        // Assert
+        JSONArray enrolledStudentsJsonArray = json.getJSONArray("enrolledStudentsID");
+        assertNotNull(enrolledStudentsJsonArray);
+        assertTrue(enrolledStudentsJsonArray.length() > 0);
+        assertEquals(student1.getStudentID(), enrolledStudentsJsonArray.getInt(0));
+        assertEquals(student2.getStudentID(), enrolledStudentsJsonArray.getInt(1));
+
+        JSONArray studentGradesJsonArray = json.getJSONArray("studentGrades");
+        assertNotNull(studentGradesJsonArray);
+        assertTrue(studentGradesJsonArray.length() > 0);
+        assertEquals(90.0, studentGradesJsonArray.getDouble(0), 0.01);
+        assertEquals(80.0, studentGradesJsonArray.getDouble(1), 0.01);
     }
 
 }

@@ -1,5 +1,7 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,5 +59,26 @@ public class StudentTest {
         assertEquals(2, student.getEnrolledCourses().size());
         assertTrue(student.getEnrolledCourses().contains(mathCourse.getCourseID()));
         assertTrue(student.getEnrolledCourses().contains(englishCourse.getCourseID()));
+    }
+
+    @Test
+    public void testToJsonEnrolledCourses() {
+        student.addCourse(mathCourse);
+        student.addCourse(englishCourse);
+        student.addCourse(philosophyCourse);
+
+        JSONObject json = student.toJson();
+
+        assertEquals("John", json.getString("name"));
+        assertEquals(123, json.getInt("studentID"));
+
+        JSONArray enrolledCoursesJsonArray = json.getJSONArray("enrolledCourses");
+        assertNotNull(enrolledCoursesJsonArray);
+        assertEquals(3, enrolledCoursesJsonArray.length());
+
+        // Verify that the correct course IDs are present in the JSON array
+        assertTrue(enrolledCoursesJsonArray.toList().contains(mathCourse.getCourseID()));
+        assertTrue(enrolledCoursesJsonArray.toList().contains(englishCourse.getCourseID()));
+        assertTrue(enrolledCoursesJsonArray.toList().contains(philosophyCourse.getCourseID()));
     }
 }

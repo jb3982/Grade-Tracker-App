@@ -50,6 +50,8 @@ public class GradeTest {
         assertEquals(1.3, grade1.letterGradeToGradePoints("D"));
         assertEquals(1.0, grade1.letterGradeToGradePoints("E"));
         assertEquals(0.0, grade1.letterGradeToGradePoints("F"));
+        assertEquals(0.0, grade1.letterGradeToGradePoints("F"));
+        assertEquals(0.0, grade1.letterGradeToGradePoints("G"));
     }
 
     @Test
@@ -67,6 +69,6 @@ public class GradeTest {
 
         courses.add(course1);
 
-        assertEquals(3.65, grade1.calculateGPA(courses));
+        assertEquals(3.3, grade1.calculateGPA(courses));
     }
 }

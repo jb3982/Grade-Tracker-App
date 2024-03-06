@@ -124,7 +124,7 @@ public class JsonReader {
         return course;
     }
 
-    private static void extractStudentGrades(JSONObject courseJson, Course course) {
+    public static void extractStudentGrades(JSONObject courseJson, Course course) {
         JSONArray studentGradesJsonArray = courseJson.optJSONArray("studentGrades");
         System.out.println("Student grades: "
                 + (studentGradesJsonArray != null ? studentGradesJsonArray.toString() : "null"));
@@ -144,7 +144,7 @@ public class JsonReader {
         }
     }
 
-    private static void extractEnrolledStudentsID(JSONObject courseJson, Course course) {
+    public static void extractEnrolledStudentsID(JSONObject courseJson, Course course) {
         JSONArray enrolledStudentsIdJsonArray = courseJson.optJSONArray("enrolledStudentsID");
         System.out.println("Enrolled students IDs: "
                 + (enrolledStudentsIdJsonArray != null ? enrolledStudentsIdJsonArray.toString() : "null"));

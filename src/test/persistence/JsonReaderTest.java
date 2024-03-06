@@ -2,6 +2,8 @@ package persistence;
 
 import model.Course;
 import model.Student;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,11 +34,15 @@ class JsonReaderTest {
         writer.open();
 
         // Setup some test data
-        List<Student> students = new ArrayList<>();
-        students.add(new Student("Alice", 123));
         List<Course> courses = new ArrayList<>();
-        courses.add(new Course("Intro to Java", "210", "An introductory course.", 101,
-                4, 100.0));
+        Course course1 = new Course("Intro to Java", "210", "An introductory course.", 101,
+                4, 100.0);
+        courses.add(course1);
+
+        List<Student> students = new ArrayList<>();
+        Student student1 = new Student("Alice", 123);
+        student1.addCourse(course1);
+        students.add(student1);
 
         writer.write(students, courses);
         writer.close();
@@ -86,6 +92,158 @@ class JsonReaderTest {
         } catch (IOException e) {
             fail("Couldn't read from test file");
         }
+    }
+
+    @Test
+    void testReaderGeneralGradeTracker_1() {
+        try {
+            // Act
+            JsonReader.Pair<List<Student>, List<Course>> data = reader.read();
+
+            // Assert that the course with the specific ID is present
+            Course course = data.second.stream()
+                    .filter(c -> c.getCourseID() == 101)
+                    .findFirst()
+                    .orElse(null);
+            assertNotNull(course, "Course with ID 101 should be found");
+
+            // Assert that a course with a non-existent ID is not present
+            Course nonExistentCourse = data.second.stream()
+                    .filter(c -> c.getCourseID() == 999)
+                    .findFirst()
+                    .orElse(null);
+            assertNull(nonExistentCourse, "Course with ID 999 should not be found");
+
+        } catch (IOException e) {
+            fail("Couldn't read from test file due to IOException");
+        }
+    }
+
+    @Test
+    void testReadAndParseStudent() {
+        try {
+            JsonReader.Pair<List<Student>, List<Course>> data = reader.read();
+            Student student = data.first.get(0); // Assuming Alice is the first student
+            assertEquals("Alice", student.getName());
+            assertEquals(123, student.getStudentID());
+
+            // Get the list of enrolled courses for the student
+            List<Integer> enrolledCourseIds = student.getEnrolledCourses();
+            assertNotNull(enrolledCourseIds, "Enrolled courses should not be null");
+
+            // Now check if the specific course ID is in the enrolled courses
+            boolean containsCourse = enrolledCourseIds.contains(101);
+            assertTrue(containsCourse, "Enrolled courses should contain course ID 101, but it does not; actual list: " + enrolledCourseIds);
+
+        } catch (IOException e) {
+            fail("Couldn't read from test file due to IOException");
+        }
+    }
+
+    @Test
+    void testExtractStudentGrades() {
+        try {
+            // Setup
+            Path testFilePath = tempDir.resolve(TEST_FILE);
+
+            // Create a Course with JSON array having Integer and Double grades
+            JSONObject courseObject = new JSONObject();
+            courseObject.put("courseName", "Test Course");
+            courseObject.put("courseCode", "TC101");
+            courseObject.put("courseDescription", "Test Description");
+            courseObject.put("courseID", 101);
+            courseObject.put("credits", 4);
+            courseObject.put("percentageGrade", 85.0);
+
+            // Add a JSONArray with an Integer and a Double grade
+            JSONArray gradesArray = new JSONArray();
+            gradesArray.put(85); // Integer grade
+            gradesArray.put(90.5); // Double grade
+            courseObject.put("studentGrades", gradesArray);
+
+            // Create a Course object
+            Course course = new Course("Test Course", "TC101", "Test Description", 101, 4, 85.0);
+
+            // Call the method extractStudentGrades from JsonReader
+            JsonReader.extractStudentGrades(courseObject, course);
+
+            // Assert that both grades are correctly added
+            List<Double> grades = course.getStudentGrades();
+            assertEquals(2, grades.size(), "Should have 2 grades");
+            assertEquals(85.0, grades.get(0), 0.001, "First grade should be 85.0 as Double");
+            assertEquals(90.5, grades.get(1), 0.001, "Second grade should be 90.5");
+
+            // Add an unsupported grade type to the JSON array and expect an exception
+            gradesArray.put("A"); // Unsupported grade type
+            courseObject.put("studentGrades", gradesArray);
+
+            // Assert that IllegalArgumentException is thrown for unsupported grade type
+            Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+                JsonReader.extractStudentGrades(courseObject, course);
+            }, "IllegalArgumentException expected for unsupported grade type");
+
+            String expectedMessage = "Invalid grade type in JSON: java.lang.String";
+            String actualMessage = exception.getMessage();
+            assertTrue(actualMessage.contains(expectedMessage), "Exception message should contain the expected message");
+
+        } catch (Exception e) {
+            fail("An unexpected exception occurred: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testExtractEnrolledStudentsID() {
+        try {
+            // Setup
+            Path testFilePath = tempDir.resolve(TEST_FILE);
+
+            // Create a Course with JSON array of enrolled student IDs
+            JSONObject courseObject = new JSONObject();
+            courseObject.put("courseName", "Test Course");
+            courseObject.put("courseCode", "TC101");
+            courseObject.put("courseDescription", "Test Description");
+            courseObject.put("courseID", 101);
+            courseObject.put("credits", 4);
+            courseObject.put("percentageGrade", 85.0);
+
+            // Add a JSONArray with student IDs
+            JSONArray enrolledStudentsIdArray = new JSONArray();
+            enrolledStudentsIdArray.put(123); // Integer student ID
+            enrolledStudentsIdArray.put(456); // Integer student ID
+            courseObject.put("enrolledStudentsID", enrolledStudentsIdArray);
+
+            // Create a Course object
+            Course course = new Course("Test Course", "TC101", "Test Description", 101, 4, 85.0);
+
+            // Call the method extractEnrolledStudentsID from JsonReader
+            JsonReader.extractEnrolledStudentsID(courseObject, course);
+
+            // Assert that both IDs are correctly added
+            List<Integer> enrolledIDs = course.getEnrolledStudentsID();
+            assertEquals(2, enrolledIDs.size(), "Should have 2 enrolled student IDs");
+            assertTrue(enrolledIDs.contains(123), "Enrolled student IDs should contain 123");
+            assertTrue(enrolledIDs.contains(456), "Enrolled student IDs should contain 456");
+
+            // Add an unsupported data type to the JSON array
+            enrolledStudentsIdArray.put("NotAnID"); // Unsupported ID type
+            courseObject.put("enrolledStudentsID", enrolledStudentsIdArray);
+
+            // Attempt to extract enrolled students and expect an exception
+            assertThrows(ClassCastException.class, () -> {
+                JsonReader.extractEnrolledStudentsID(courseObject, course);
+            });
+        } catch (Exception e) {
+            // Output the actual exception message
+            e.printStackTrace(); // This prints the stack trace including the message
+            String actualMessage = e.getMessage();
+            System.out.println("Actual exception message: " + actualMessage);
+
+            // Assert that the message contains a specific text
+            String expectedMessage = "Cannot cast java.lang.String to java.lang.Integer";
+            System.out.println("Actual exception message: " + actualMessage);
+            assertTrue(actualMessage.contains(expectedMessage), "Exception message should contain the expected message");
+        }
+
     }
 
     @AfterEach
