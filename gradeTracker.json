@@ -1,0 +1,30 @@
+{
+    "courses": [{
+        "courseName": "java",
+        "credits": 4,
+        "courseCode": "210",
+        "enrolledStudentsID": [
+            1,
+            2
+        ],
+        "studentGrades": [
+            87,
+            78
+        ],
+        "percentageGrade": 100,
+        "courseDescription": "intro",
+        "courseID": 210001
+    }],
+    "students": [
+        {
+            "studentID": 1,
+            "name": "jai",
+            "enrolledCourses": [210001]
+        },
+        {
+            "studentID": 2,
+            "name": "raghu",
+            "enrolledCourses": [210001]
+        }
+    ]
+}
