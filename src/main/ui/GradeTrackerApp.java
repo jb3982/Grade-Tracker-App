@@ -71,6 +71,7 @@ public class GradeTrackerApp {
 
     // Modifies: this
     // Effects: process various commands
+    
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void processCommand(String command) {
         switch (command) {

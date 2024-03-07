@@ -290,6 +290,28 @@ class JsonReaderTest {
     }
 
     @Test
+    void testExtractEnrolledStudentsID_1() {
+        // Set up JSON object to mimic the structure you expect to read
+        JSONObject courseJson = new JSONObject();
+        JSONArray enrolledStudentsIdJsonArray = new JSONArray();
+        // Adding valid student IDs
+        enrolledStudentsIdJsonArray.put(101);
+        enrolledStudentsIdJsonArray.put(102);
+        courseJson.put("enrolledStudentsID", enrolledStudentsIdJsonArray);
+
+        // Create a course to be used in the test
+        Course course = new Course("Test Course", "TC101", "Test Description", 101, 4, 85.0);
+
+        // Call the static method extractEnrolledStudentsID
+        JsonReader.extractEnrolledStudentsID(courseJson, course);
+
+        // Verify that the student IDs have been added to the course
+        assertEquals(2, course.getEnrolledStudentsID().size());
+        assertTrue(course.getEnrolledStudentsID().contains(101));
+        assertTrue(course.getEnrolledStudentsID().contains(102));
+    }
+
+    @Test
     void testFindCourseByIdNonExistent() {
         // Assume JsonReader has a public constructor and findCourseById is made package-private for testing
         JsonReader jsonReader = new JsonReader(""); // The path is irrelevant for this test
