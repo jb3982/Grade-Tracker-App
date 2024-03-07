@@ -235,6 +235,23 @@ class JsonReaderTest {
     }
 
     @Test
+    void testExtractStudentGradesWhenJsonArrayIsNull() {
+        // Set up a course JSON object without the studentGrades array
+        JSONObject courseJson = new JSONObject();
+        // Don't put a studentGrades array to simulate the null scenario
+
+        // Create a course to be used in the test
+        Course course = new Course("Test Course", "TC101", "Test Description", 101,
+                4, 85.0);
+
+        // Call the static method extractStudentGrades
+        JsonReader.extractStudentGrades(courseJson, course);
+
+        // Verify that the student grades list is empty
+        assertTrue(course.getStudentGrades().isEmpty(), "Student grades list should be empty when studentGradesJsonArray is null");
+    }
+
+    @Test
     void testExtractEnrolledStudentsID() {
         try {
             // Setup
@@ -309,6 +326,18 @@ class JsonReaderTest {
         assertEquals(2, course.getEnrolledStudentsID().size());
         assertTrue(course.getEnrolledStudentsID().contains(101));
         assertTrue(course.getEnrolledStudentsID().contains(102));
+    }
+
+    @Test
+    void testExtractEnrolledStudentsIDWhenJsonArrayIsNull() {
+        JSONObject courseJson = new JSONObject(); // No "enrolledStudentsID" key/value added to simulate null array
+        Course course = new Course("Test Course", "TC101", "Test Description", 101, 4, 85.0);
+
+        // Assuming extractEnrolledStudentsID has package-private access for testing, otherwise use reflection
+        JsonReader.extractEnrolledStudentsID(courseJson, course);
+
+        // The list of enrolled student IDs should be empty because the JSON array was null
+        assertTrue(course.getEnrolledStudentsID().isEmpty(), "Enrolled students ID list should be empty when JSON array is null");
     }
 
     @Test
