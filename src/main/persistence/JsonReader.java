@@ -46,7 +46,6 @@ public class JsonReader {
         return new Pair<>(students, courses);
     }
 
-
     // EFFECTS: parses students from JSON array and returns it as a list
     private List<Student> parseStudents(JSONArray studentsJsonArray, List<Course> courses) {
         List<Student> students = new ArrayList<>();
@@ -87,7 +86,6 @@ public class JsonReader {
         return courses;
     }
 
-
     // Effects: finds course using the course ID in the list of Courses
     public Course findCourseById(int courseId, List<Course> courses) {
         for (Course course : courses) {
@@ -97,7 +95,6 @@ public class JsonReader {
         }
         return null;
     }
-
 
     // EFFECTS: parses course from JSON object and returns it
     private Course parseCourse(JSONObject courseJson) {
@@ -124,10 +121,9 @@ public class JsonReader {
         return course;
     }
 
+    // Effects: extracts student grades from courseJson
     public static void extractStudentGrades(JSONObject courseJson, Course course) {
         JSONArray studentGradesJsonArray = courseJson.optJSONArray("studentGrades");
-//        System.out.println("Student grades: "
-//                + (studentGradesJsonArray != null ? studentGradesJsonArray.toString() : "null"));
 
         if (studentGradesJsonArray != null) {
             for (Object gradeObj : studentGradesJsonArray) {
@@ -144,10 +140,9 @@ public class JsonReader {
         }
     }
 
+    // Effects: extracts enrolled student ID's from courseJson
     public static void extractEnrolledStudentsID(JSONObject courseJson, Course course) {
         JSONArray enrolledStudentsIdJsonArray = courseJson.optJSONArray("enrolledStudentsID");
-//        System.out.println("Enrolled students IDs: "
-//                + (enrolledStudentsIdJsonArray != null ? enrolledStudentsIdJsonArray.toString() : "null"));
 
         if (enrolledStudentsIdJsonArray != null) {
             for (Object studentIdObj : enrolledStudentsIdJsonArray) {
@@ -156,6 +151,7 @@ public class JsonReader {
             }
         }
     }
+
 
     // A simple Pair class
     public static class Pair<K, V> {

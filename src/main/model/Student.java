@@ -40,16 +40,14 @@ public class Student {
     }
 
 
-    /* Modifies: this
-     * Effects: Enrolls the student in a given course.
-     */
+    //Modifies: this
+    //Effects: Enrolls the student in a given course.
     public void addCourse(Course course) {
         enrolledCourses.add(course.getCourseID());
     }
 
-    /* Modifies: this
-     * Effects: removes the given course from list.
-     */
+    // Modifies: this
+    // Effects: removes the given course from list.
     public void dropCourse(Course course) {
         Integer courseToRemove = course.getCourseID();
         for (int i = 0; i < enrolledCourses.size(); i++) {
@@ -61,6 +59,7 @@ public class Student {
     }
 
 
+    // Modifies: this
     // EFFECTS: returns this as JSON object
     public JSONObject toJson() {
         JSONObject json = new JSONObject();

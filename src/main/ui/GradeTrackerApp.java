@@ -65,6 +65,7 @@ public class GradeTrackerApp {
         System.out.println("\ts -> Summary view");
         System.out.println("\tsv -> Save data");
         System.out.println("\tld -> Load data");
+        System.out.println("\tclr -> Clear save");
         System.out.println("\tq -> Quit");
     }
 
@@ -99,6 +100,9 @@ public class GradeTrackerApp {
             case "ld":
                 loadData();
                 break;
+            case "clr":
+                clearSaveData();
+                break;
             case "q":
                 saveOnQuit();
                 break;
@@ -122,6 +126,26 @@ public class GradeTrackerApp {
     }
 
     // MODIFIES: this
+    // EFFECTS: clears the saved JSON data
+    private void clearSaveData() {
+        System.out.println("Are you sure you want to clear all saved data? This cannot be undone. (y/n)");
+        String inputString = input.nextLine().trim().toLowerCase();
+        if (inputString.equals("y")) {
+            try {
+                jsonWriter.open();
+                jsonWriter.write(new ArrayList<>(), new ArrayList<>()); // Writing empty lists to the file
+                jsonWriter.close();
+                System.out.println("All saved data has been cleared.");
+            } catch (FileNotFoundException e) {
+                System.out.println("Unable to access the file: " + JSON_STORE);
+            }
+        } else {
+            System.out.println("Data clear cancelled.");
+        }
+    }
+
+
+    // MODIFIES: this
     // EFFECTS: loads students and courses from file
     private void loadData() {
         try {
@@ -136,21 +160,9 @@ public class GradeTrackerApp {
         }
     }
 
-//    // MODIFIES: this
-//    // EFFECTS: saves the current state to the JSON file
-//    private void saveData() {
-//        try {
-//            jsonWriter.open();
-//            jsonWriter.write(students, courses);
-//            jsonWriter.close();
-//            System.out.println("Data saved successfully to " + JSON_STORE);
-//        } catch (FileNotFoundException e) {
-//            System.out.println("Unable to write to file: " + JSON_STORE);
-//        }
-//    }
 
-
-
+    // MODIFIES: this
+    // EFFECTS: saves the current state to the JSON file
     private void saveData() {
         try {
             // Debugging: Check the data before saving
@@ -444,7 +456,7 @@ public class GradeTrackerApp {
         return null;
     }
 
-    // Effets: Generates a collective report on the given student.
+    // Effects: Generates a collective report on the given student.
     private String generateReport(Student student) {
         StringBuilder reportBuilder = new StringBuilder();
         reportBuilder.append("Report for Student ID: ").append(student.getStudentID()).append("\n");
@@ -485,7 +497,7 @@ public class GradeTrackerApp {
                 .append("\n");
     }
 
-    // Helper method to get List of Course objects from a student's enrolled courses IDs
+    // Effects: get the List of Course objects from a student's enrolled courses IDs
     private List<Course> getStudentCourses(Student student) {
         List<Course> studentCourses = new ArrayList<>();
         for (Integer courseId : student.getEnrolledCourses()) {

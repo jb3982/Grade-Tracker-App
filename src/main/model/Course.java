@@ -218,19 +218,6 @@ public class Course {
     }
 
 
-//    // Effects: Calculates the median grade of the course.
-//    public double calculateMedianGrade() {
-//        if (!studentGrades.isEmpty()) {
-//            int middle = studentGrades.size() / 2;
-//            if (studentGrades.size() % 2 == 1) {
-//                return studentGrades.get(middle);
-//            } else {
-//                return ((studentGrades.get(middle) + 1) + studentGrades.get(middle)) / 2.0;
-//            }
-//        }
-//        return 0;
-//    }
-
     // Effects: Calculates standard deviation of grades in the course.
     public double calculateStandardDeviation() {
         if (!studentGrades.isEmpty()) {
@@ -263,6 +250,7 @@ public class Course {
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
 
+    // Modifies: this
     // Effects: Converts percentage grade to GPA point grades.
     public double percentageToGradePoints(List<Double> studentGrades) {
         if (!studentGrades.isEmpty()) {
@@ -287,7 +275,7 @@ public class Course {
         return gradeDistribution;
     }
 
-
+    // Modifies: this
     // EFFECTS: returns this as JSON object
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
