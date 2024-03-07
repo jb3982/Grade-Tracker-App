@@ -1,20 +1,34 @@
 {
-    "courses": [{
-        "courseName": "java",
-        "credits": 4,
-        "courseCode": "210",
-        "enrolledStudentsID": [
-            1,
-            2
-        ],
-        "studentGrades": [
-            87,
-            78
-        ],
-        "percentageGrade": 100,
-        "courseDescription": "intro",
-        "courseID": 210001
-    }],
+    "courses": [
+        {
+            "courseName": "java",
+            "credits": 4,
+            "courseCode": "210",
+            "enrolledStudentsID": [
+                1,
+                2,
+                3
+            ],
+            "studentGrades": [
+                87,
+                78,
+                85
+            ],
+            "percentageGrade": 100,
+            "courseDescription": "intro",
+            "courseID": 210001
+        },
+        {
+            "courseName": "bsl",
+            "credits": 4,
+            "courseCode": "110",
+            "enrolledStudentsID": [3],
+            "studentGrades": [79],
+            "percentageGrade": 100,
+            "courseDescription": "wrvfvs",
+            "courseID": 1
+        }
+    ],
     "students": [
         {
             "studentID": 1,
@@ -25,6 +39,14 @@
             "studentID": 2,
             "name": "raghu",
             "enrolledCourses": [210001]
+        },
+        {
+            "studentID": 3,
+            "name": "saanvi",
+            "enrolledCourses": [
+                1,
+                210001
+            ]
         }
     ]
 }
