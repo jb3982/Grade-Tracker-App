@@ -6,6 +6,7 @@ import model.Student;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class GradeTrackerApp {
     private Scanner input;
     private final List<Course> courses; // Assuming you have a list of courses
     private Grade grade;
-    private static final String JSON_STORE = "gradeTracker.json"; // File path for the JSON data
+    static final String JSON_STORE = "gradeTracker.json"; // File path for the JSON data
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
 
@@ -29,7 +30,11 @@ public class GradeTrackerApp {
         grade = new Grade();
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
-//        loadData();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new GradeTrackerGUI(students, courses);
+            }
+        });
         runGradeTracker();
     }
 
@@ -147,7 +152,7 @@ public class GradeTrackerApp {
 
     // MODIFIES: this
     // EFFECTS: loads students and courses from file
-    private void loadData() {
+    public void loadData() {
         try {
             JsonReader.Pair<List<Student>, List<Course>> data = jsonReader.read();
             students.clear();
@@ -163,9 +168,8 @@ public class GradeTrackerApp {
 
     // MODIFIES: this
     // EFFECTS: saves the current state to the JSON file
-    private void saveData() {
+    public void saveData() {
         try {
-            // Debugging: Check the data before saving
             for (Course course : courses) {
                 System.out.println("Saving course: " + course.getCourseName());
                 System.out.println("Enrolled students IDs: " + course.getEnrolledStudentsID());
@@ -179,7 +183,7 @@ public class GradeTrackerApp {
         } catch (FileNotFoundException e) {
             System.out.println("Unable to write to file: " + JSON_STORE);
         } catch (Exception e) {
-            e.printStackTrace(); // Add this to catch any other exception that might occur
+            e.printStackTrace();
         }
     }
 
