@@ -30,15 +30,16 @@ public class GradeTrackerGUI {
     private JTextArea displayArea;
 
     // GradeTrackerApp GUI constructor and Initializes the application with the provided lists of students and courses.
-    public GradeTrackerGUI(List<Student> students, List<Course> courses) {
-        this.students = students;
-        this.courses = courses;
+    public GradeTrackerGUI() {
+        this.students = new ArrayList<>();
+        this.courses = new ArrayList<>();
         grade = new Grade();
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
 
 
-//        setupStartupImage();
+        setupStartupImage();
+        initFrame();
         createAndShowGUI();
 
         displayArea = new JTextArea(15, 30);
@@ -46,17 +47,19 @@ public class GradeTrackerGUI {
         displayArea.setFont(new Font("Consolas", Font.PLAIN, 12));
     }
 
+    private void initFrame() {
+        frame = new JFrame("Grade Tracker Application");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+    }
+
+
     /**
      * Creates and shows the GUI.
      * Modifies: this
      * Effects: Sets up the GUI components and makes the frame visible.
      */
     private void createAndShowGUI() {
-        frame = new JFrame("Grade Tracker Application");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
-
-
         createSidebar();
         createContentArea();
         createMenuBar();
@@ -79,33 +82,40 @@ public class GradeTrackerGUI {
         updateDisplay();
     }
 
-//    private void setupStartupImage() {
+    private void setupStartupImage() {
 //        if (frame == null) {
 //            System.err.println("Frame not initialized.");
 //            return;
 //        }
-//
-//        // Path to the image file inside the resources folder
-//        String imagePath = "/GradeTracker.png";
+
+        // Path to the image file inside the resources folder
+        String imagePath = "./src/resources/GradeTracker.png";
 //        URL imgUrl = getClass().getResource(imagePath);
+
+        ImageIcon imageIcon = new ImageIcon(imagePath);
+
+        // Create a JLabel to hold the image
+        JLabel imageLabel = new JLabel(imageIcon);
+
+        JFrame frame = new JFrame();
+        // Adding directly to the frame's content pane
+        frame.add(imageLabel, BorderLayout.CENTER);
+
+        // Refresh the frame to display the image
+        frame.pack();
+        frame.setLocationRelativeTo(null); // Center the frame on the screen
+        frame.setVisible(true);
+//        frame.repaint();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 //
-//        if (imgUrl != null) {
-//            ImageIcon imageIcon = new ImageIcon(imgUrl);
-//
-//            // Create a JLabel to hold the image
-//            JLabel imageLabel = new JLabel(imageIcon);
-//
-//            // Adding directly to the frame's content pane
-//            frame.getContentPane().add(imageLabel, BorderLayout.CENTER);
-//
-//            // Refresh the frame to display the image
-//            frame.pack();
-//            frame.setLocationRelativeTo(null); // Center the frame on the screen
-//            frame.setVisible(true);
-//        } else {
-//            System.err.println("Image file not found: " + imagePath);
-//        }
-//    }
+        frame.setVisible(false);
+        frame.dispose();
+    }
 
     /**
      * Sets up the sidebar with buttons.
@@ -350,13 +360,31 @@ public class GradeTrackerGUI {
 
     // helper method
     private static JPanel getStudentPanel(JTextField nameField, JTextField idField, JScrollPane courseScrollPane) {
-        JPanel panel = new JPanel(new GridLayout(0, 2, 2, 2));
-        panel.add(new JLabel("Name:"));
-        panel.add(nameField);
-        panel.add(new JLabel("ID:"));
-        panel.add(idField);
-        panel.add(new JLabel("Courses:"));
-        panel.add(courseScrollPane); // Add the course list within a scroll pane to the panel
+        JPanel panel = new JPanel(new GridLayout(1,2));
+
+        JPanel panelUp = new JPanel(new GridLayout(4,1,2,2));
+        JLabel nameLabel = new JLabel("Name:");
+        nameLabel.setHorizontalAlignment(JLabel.CENTER);
+        panelUp.add(nameLabel);
+        panelUp.add(nameField);
+        JLabel idLabel = new JLabel("ID:");
+        idLabel.setHorizontalAlignment(JLabel.CENTER);
+        panelUp.add(idLabel);
+        panelUp.add(idField);
+
+        JPanel panelDown = new JPanel(new BorderLayout());
+
+        JLabel coursesText = new JLabel("List of Courses Available");
+        coursesText.setHorizontalAlignment(JLabel.CENTER);
+        panelDown.add(coursesText,BorderLayout.NORTH);
+        panelDown.add(courseScrollPane,BorderLayout.SOUTH); // Add the course list within a scroll pane to the panel
+
+
+//        GridBagConstraints layoutConstraints = new GridBagConstraints();
+//        layoutConstraints.gridwidth = 2;
+        panel.add(panelUp,BorderLayout.WEST);
+        panel.add(panelDown,BorderLayout.EAST);
+
         return panel;
     }
 
@@ -679,8 +707,8 @@ public class GradeTrackerGUI {
         textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         textArea.setText(summaryBuilder.toString());
         textArea.setEditable(false);
+//        textArea.setSize(1000,textArea.getHeight());
         JScrollPane scrollPane = new JScrollPane(textArea);
-
         JOptionPane.showMessageDialog(frame, scrollPane, "Summary View", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -812,27 +840,27 @@ public class GradeTrackerGUI {
      * and initializes the main GUI with loaded data.
      * Displays success or error messages based on the outcome of data loading.
      */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                List<Student> students = new ArrayList<>();
-                List<Course> courses = new ArrayList<>();
-
-                String jsonFilePath = "gradeTracker.json";
-                JsonReader jsonReader = new JsonReader(jsonFilePath);
-
-                try {
-                    JsonReader.Pair<List<Student>, List<Course>> data = jsonReader.read();
-                    students.addAll(data.first);
-                    courses.addAll(data.second);
-                    System.out.println("Data loaded successfully.");
-                } catch (IOException e) {
-                    System.err.println("Failed to load data from JSON: " + e.getMessage());
-                }
-
-                new GradeTrackerGUI(students, courses);
-            }
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+//                List<Student> students = new ArrayList<>();
+//                List<Course> courses = new ArrayList<>();
+//
+//                String jsonFilePath = "gradeTracker.json";
+//                JsonReader jsonReader = new JsonReader(jsonFilePath);
+//
+//                try {
+//                    JsonReader.Pair<List<Student>, List<Course>> data = jsonReader.read();
+//                    students.addAll(data.first);
+//                    courses.addAll(data.second);
+//                    System.out.println("Data loaded successfully.");
+//                } catch (IOException e) {
+//                    System.err.println("Failed to load data from JSON: " + e.getMessage());
+//                }
+//
+//                new GradeTrackerGUI(students, courses);
+//            }
+//        });
+//    }
 }
 
