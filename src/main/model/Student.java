@@ -73,10 +73,5 @@ public class Student {
         return json;
     }
 
-    @Override
-    public String toString() {
-        // Modify this to include the details you want to display about a Student
-        return "Student Name: " + this.getName() + ", ID: " + this.getStudentID();
-    }
 
 }
