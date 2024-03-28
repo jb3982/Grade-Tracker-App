@@ -29,6 +29,7 @@ public class GradeTrackerGUI {
     private JsonReader jsonReader;
     private JTextArea displayArea;
 
+
     // GradeTrackerApp GUI constructor and Initializes the application with the provided lists of students and courses.
     public GradeTrackerGUI() {
         this.students = new ArrayList<>();
@@ -37,14 +38,9 @@ public class GradeTrackerGUI {
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
 
-
         setupStartupImage();
         initFrame();
         createAndShowGUI();
-
-        displayArea = new JTextArea(15, 30);
-        displayArea.setEditable(false);
-        displayArea.setFont(new Font("Consolas", Font.PLAIN, 12));
     }
 
     private void initFrame() {
@@ -61,9 +57,19 @@ public class GradeTrackerGUI {
      */
     private void createAndShowGUI() {
         createSidebar();
-        createContentArea();
         createMenuBar();
 
+
+        displayArea = new JTextArea(15, 30);
+        displayArea.setEditable(false);
+        displayArea.setFont(new Font("Consolas", Font.PLAIN, 12));
+
+        JScrollPane scrollPane = new JScrollPane(displayArea);
+
+        contentArea = new JPanel(new BorderLayout());
+        contentArea.add(scrollPane, BorderLayout.CENTER);
+        // Set up a border for spacing
+        contentArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         frame.add(sidebar, BorderLayout.WEST);
         frame.add(contentArea, BorderLayout.CENTER);
@@ -73,49 +79,27 @@ public class GradeTrackerGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        JScrollPane scrollPane = new JScrollPane(displayArea);
-        contentArea.add(scrollPane, BorderLayout.CENTER);
-        // Set up a border for spacing
-        contentArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
         // Now update the display with the initial data
         updateDisplay();
     }
 
+    // Effects: sets up the startup image of the app.
     private void setupStartupImage() {
-//        if (frame == null) {
-//            System.err.println("Frame not initialized.");
-//            return;
-//        }
-
-        // Path to the image file inside the resources folder
-        String imagePath = "./src/resources/GradeTracker.png";
-//        URL imgUrl = getClass().getResource(imagePath);
-
-        ImageIcon imageIcon = new ImageIcon(imagePath);
-
-        // Create a JLabel to hold the image
-        JLabel imageLabel = new JLabel(imageIcon);
-
-        JFrame frame = new JFrame();
-        // Adding directly to the frame's content pane
-        frame.add(imageLabel, BorderLayout.CENTER);
-
-        // Refresh the frame to display the image
-        frame.pack();
-        frame.setLocationRelativeTo(null); // Center the frame on the screen
-        frame.setVisible(true);
-//        frame.repaint();
-
+        JWindow startWindow = new JWindow();
+        ImageIcon starScreenImage = new ImageIcon("./src/resources/GradeTracker.png");
+        JLabel label = new JLabel(starScreenImage);
+        startWindow.getContentPane().add(label);
+        startWindow.pack();
+        startWindow.setLocationRelativeTo(null);
+        startWindow.setVisible(true);
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-//
-        frame.setVisible(false);
-        frame.dispose();
+        startWindow.dispose();
     }
+
 
     /**
      * Sets up the sidebar with buttons.
@@ -209,27 +193,6 @@ public class GradeTrackerGUI {
     }
 
     /**
-     * Creates the content area for the GUI.
-     * Modifies: this
-     * Effects: Sets up the content area of the GUI including the display area for students and courses.
-     */
-    private void createContentArea() {
-        contentArea = new JPanel(new BorderLayout());
-        displayArea = new JTextArea(15, 30);
-        displayArea.setEditable(false);
-        displayArea.setFont(new Font("Consolas", Font.PLAIN, 12));
-
-        JScrollPane scrollPane = new JScrollPane(displayArea);
-        contentArea.add(scrollPane, BorderLayout.CENTER); // Add the scrollPane to the content area
-
-        // Set up a border for spacing
-        contentArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Call updateDisplay here to initialize the display area with only the heading
-        updateDisplay();
-    }
-
-    /**
      * Updates the display area with the current data.
      * Modifies: this
      * Effects: Updates the display area to show the current list of students and their enrolled courses.
@@ -249,6 +212,8 @@ public class GradeTrackerGUI {
         }
         displayArea.setText(sb.toString());
     }
+
+
 
     /**
      * Creates the menu bar.
@@ -310,7 +275,6 @@ public class GradeTrackerGUI {
 
             tryForStudent(courseList, name, idText);
         }
-        updateDisplay();
     }
 
     // helper method
@@ -332,12 +296,17 @@ public class GradeTrackerGUI {
                 students.add(newStudent);
                 JOptionPane.showMessageDialog(frame, "Student added successfully!", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
+
+                SwingUtilities.invokeLater(this::updateDisplay);
+
             }
+            
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frame, "ID must be an integer", "Input Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     // helper method
     private JList<Course> getStudentList(DefaultListModel<Course> listModel) {
@@ -377,11 +346,8 @@ public class GradeTrackerGUI {
         JLabel coursesText = new JLabel("List of Courses Available");
         coursesText.setHorizontalAlignment(JLabel.CENTER);
         panelDown.add(coursesText,BorderLayout.NORTH);
-        panelDown.add(courseScrollPane,BorderLayout.SOUTH); // Add the course list within a scroll pane to the panel
+        panelDown.add(courseScrollPane,BorderLayout.SOUTH);
 
-
-//        GridBagConstraints layoutConstraints = new GridBagConstraints();
-//        layoutConstraints.gridwidth = 2;
         panel.add(panelUp,BorderLayout.WEST);
         panel.add(panelDown,BorderLayout.EAST);
 
@@ -835,32 +801,5 @@ public class GradeTrackerGUI {
         }
     }
 
-    /**
-     * Effects: Launches the application, attempts to load initial data from a JSON file,
-     * and initializes the main GUI with loaded data.
-     * Displays success or error messages based on the outcome of data loading.
-     */
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//                List<Student> students = new ArrayList<>();
-//                List<Course> courses = new ArrayList<>();
-//
-//                String jsonFilePath = "gradeTracker.json";
-//                JsonReader jsonReader = new JsonReader(jsonFilePath);
-//
-//                try {
-//                    JsonReader.Pair<List<Student>, List<Course>> data = jsonReader.read();
-//                    students.addAll(data.first);
-//                    courses.addAll(data.second);
-//                    System.out.println("Data loaded successfully.");
-//                } catch (IOException e) {
-//                    System.err.println("Failed to load data from JSON: " + e.getMessage());
-//                }
-//
-//                new GradeTrackerGUI(students, courses);
-//            }
-//        });
-//    }
 }
 

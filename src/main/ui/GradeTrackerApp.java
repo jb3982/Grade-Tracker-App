@@ -30,11 +30,7 @@ public class GradeTrackerApp {
         grade = new Grade();
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-//                new GradeTrackerGUI(students, courses);
-            }
-        });
+
         runGradeTracker();
     }
 

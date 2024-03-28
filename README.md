@@ -34,3 +34,4 @@ My personal connection to this project is deeply rooted in the difficulties I've
 - As a user, I desire access to a summarized view of grade distributions to effectively monitor and adhere to academic standards.
 - As a user, I would like to be prompted to save the application's state to a file when I choose to save, giving me the control to decide whether or not to save the changes made during the session.
 - As a user, upon launching the application, I wish to be presented with the option to load the grade tracker's state from a previously saved file, allowing me to resume work seamlessly from where I last left off.
+- As a user, I should be given a set of buttons to add a student, course and enter grades.
