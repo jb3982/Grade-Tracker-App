@@ -1,0 +1,59 @@
+@startuml
+
+class GradeTrackerGUI {
+}
+
+class Grade {
+}
+
+class JFrame {
+}
+
+class JPanel {
+}
+
+class JMenuBar {
+}
+
+class JTextArea {
+}
+
+class JsonWriter {
+}
+
+class JsonReader {
+}
+
+class Student {
+}
+
+class Course {
+}
+
+class EventLog {
+}
+
+class Event {
+}
+
+GradeTrackerGUI *-- "1" JFrame : frame
+GradeTrackerGUI *-- "1" JPanel : sidebar
+GradeTrackerGUI *-- "1" JPanel : contentArea
+GradeTrackerGUI *-- "1" JMenuBar : menuBar
+GradeTrackerGUI *-- "1" JTextArea : displayArea
+GradeTrackerGUI *-- "1" JTextArea : courseSummaryDisplayArea
+GradeTrackerGUI *-- "*" Student : students
+GradeTrackerGUI *-- "*" Course : courses
+GradeTrackerGUI *-- "1" JsonWriter : jsonWriter
+GradeTrackerGUI *-- "1" JsonReader : jsonReader
+GradeTrackerGUI ..> Grade : <<uses>>
+
+Student "1" -- "*" Course : enrolledCourses
+
+Course ..> EventLog : uses >
+Course ..> Event : uses >
+Course ..> Grade : <<uses>>
+
+EventLog "1" -- "*" Event : events
+
+@enduml
