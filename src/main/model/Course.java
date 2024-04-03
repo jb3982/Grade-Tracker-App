@@ -137,6 +137,8 @@ public class Course {
     public void enrollStudent(Student student) {
         if (!enrolledStudentsID.contains(student.getStudentID())) {
             enrolledStudentsID.add(student.getStudentID());
+            EventLog.getInstance().logEvent(new Event("Student Name: " + student.getName()
+                    + "\n" + "Enrolled in course: " + this.courseName));
         }
     }
 
@@ -148,6 +150,8 @@ public class Course {
         for (int i = 0; i < enrolledStudentsID.size(); i++) {
             if (Objects.equals(enrolledStudentsID.get(i), studentIdToRemove)) {
                 enrolledStudentsID.remove(studentIdToRemove);
+                EventLog.getInstance().logEvent(new Event("Student Name: " + student.getName()
+                        + "\n" + "Removed from course: " + this.courseName));
             }
         }
     }
@@ -159,6 +163,8 @@ public class Course {
         for (int i = 0; i < enrolledStudentsID.size(); i++) {
             if (Objects.equals(enrolledStudentsID.get(i), studentIdToUpdate)) {
                 this.studentGrades.add(i, grade);
+                EventLog.getInstance().logEvent(new Event("Added grade for student: " + student.getName()
+                        + "\n" + "For course: " + this.courseName));
             }
         }
     }
@@ -170,6 +176,8 @@ public class Course {
         for (int i = 0; i < enrolledStudentsID.size(); i++) {
             if (Objects.equals(enrolledStudentsID.get(i), studentIdToUpdate)) {
                 studentGrades.add(i,0.0);
+                EventLog.getInstance().logEvent(new Event("Removed grade for student: " + student.getName()
+                        + "\n" + "For course: " + this.courseName));
             }
         }
     }

@@ -1,6 +1,8 @@
 package ui;
 
 import model.Course;
+import model.Event;
+import model.EventLog;
 import model.Grade;
 import model.Student;
 import persistence.JsonReader;
@@ -28,6 +30,7 @@ public class GradeTrackerGUI {
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
     private JTextArea displayArea;
+    private JTextArea courseSummaryDisplayArea;
 
 
     // GradeTrackerApp GUI constructor and Initializes the application with the provided lists of students and courses.
@@ -59,15 +62,22 @@ public class GradeTrackerGUI {
         createSidebar();
         createMenuBar();
 
-
         displayArea = new JTextArea(15, 30);
         displayArea.setEditable(false);
         displayArea.setFont(new Font("Consolas", Font.PLAIN, 12));
 
+        courseSummaryDisplayArea = new JTextArea(5, 30);
+        courseSummaryDisplayArea.setEditable(false);
+        courseSummaryDisplayArea.setFont(new Font("Consolas", Font.PLAIN, 12));
+
         JScrollPane scrollPane = new JScrollPane(displayArea);
+        JScrollPane summaryScrollPane = new JScrollPane(courseSummaryDisplayArea);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, summaryScrollPane);
+        splitPane.setResizeWeight(0.8);
 
         contentArea = new JPanel(new BorderLayout());
-        contentArea.add(scrollPane, BorderLayout.CENTER);
+        contentArea.add(splitPane, BorderLayout.CENTER);
         // Set up a border for spacing
         contentArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -82,6 +92,44 @@ public class GradeTrackerGUI {
         // Now update the display with the initial data
         updateDisplay();
     }
+
+    /**
+     * Updates the display area with the current data.
+     * Modifies: this
+     * Effects: Updates the display area to show the current list of students and their enrolled courses.
+     */
+    private void updateDisplay() {
+        StringBuilder sb = new StringBuilder("Students and Enrolled Courses:\n");
+
+        if (!students.isEmpty()) {
+            for (Student student : students) {
+                sb.append(student.getName()).append(" (ID: ").append(student.getStudentID()).append(")\n");
+                List<Course> enrolledCourses = getCoursesForStudent(student);
+                for (Course course : enrolledCourses) {
+                    sb.append("  - ").append(course.getCourseName()).append("\n");
+                }
+                sb.append("\n");
+            }
+        }
+        displayArea.setText(sb.toString());
+        updateCourseEnrollmentSummary();
+    }
+
+    private void updateCourseEnrollmentSummary() {
+        StringBuilder summaryBuilder = new StringBuilder();
+        summaryBuilder.append("Total number of Enrolled Students:\n");
+//        summaryBuilder.append("--------------------------------\n");
+
+        for (Course course : courses) {
+            long count = students.stream()
+                    .filter(s -> s.getEnrolledCourses().contains(course.getCourseID()))
+                    .count();
+            summaryBuilder.append(String.format("Total Students in %s: %d%n", course.getCourseName(), count));
+        }
+
+        courseSummaryDisplayArea.setText(summaryBuilder.toString());
+    }
+
 
     // Effects: sets up the startup image of the app.
     private void setupStartupImage() {
@@ -116,6 +164,7 @@ public class GradeTrackerGUI {
         calculateGpa();
         generateReport();
         summaryView();
+
 
         sidebar.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
@@ -158,7 +207,6 @@ public class GradeTrackerGUI {
      * Effects: Adds an "Enter Grades" button to the sidebar. Activating this button executes doEnterGrades(),
      * enabling the entry of grades for students in specific courses.
      */
-
     private void enterGrades() {
         JButton enterGradesButton = new JButton("Enter Grades");
         enterGradesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -171,7 +219,6 @@ public class GradeTrackerGUI {
      * Effects: Introduces an "Add Course" button to the sidebar. On click, doAddCourse() is invoked,
      * which opens a dialog to enter new course details and, upon validation, adds a new course to the system.
      */
-
     private void addCourse() {
         JButton addCourseButton = new JButton("Add Course");
         addCourseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -191,28 +238,6 @@ public class GradeTrackerGUI {
         addStudentButton.addActionListener(e -> doAddStudent());
         sidebar.add(addStudentButton);
     }
-
-    /**
-     * Updates the display area with the current data.
-     * Modifies: this
-     * Effects: Updates the display area to show the current list of students and their enrolled courses.
-     */
-    private void updateDisplay() {
-        StringBuilder sb = new StringBuilder("Students and Enrolled Courses:\n");
-
-        if (!students.isEmpty()) {
-            for (Student student : students) {
-                sb.append(student.getName()).append(" (ID: ").append(student.getStudentID()).append(")\n");
-                List<Course> enrolledCourses = getCoursesForStudent(student);
-                for (Course course : enrolledCourses) {
-                    sb.append("  - ").append(course.getCourseName()).append("\n");
-                }
-                sb.append("\n");
-            }
-        }
-        displayArea.setText(sb.toString());
-    }
-
 
 
     /**
@@ -246,6 +271,56 @@ public class GradeTrackerGUI {
         JMenuItem quitItem = new JMenuItem("Quit");
         quitItem.addActionListener(e -> doQuitApp());
         fileMenu.add(quitItem);
+
+        // Event Log Menu
+        JMenu eventLogMenu = new JMenu("Event Log");
+        menuBar.add(eventLogMenu);
+
+
+        // View Log MenuItem
+        JMenuItem viewLogItem = new JMenuItem("View Log");
+        viewLogItem.addActionListener(e -> doViewEventLog());
+        eventLogMenu.add(viewLogItem);
+
+        // Clear Log MenuItem
+        JMenuItem clearLogItem = new JMenuItem("Clear Log");
+        clearLogItem.addActionListener(e -> doClearEventLog());
+        eventLogMenu.add(clearLogItem);
+    }
+
+
+    /**
+     * Displays the event log.
+     * Effects: Shows the event log in a dialog or the display area.
+     */
+    private void doViewEventLog() {
+        EventLog eventLog = EventLog.getInstance();
+        StringBuilder logBuilder = new StringBuilder();
+        for (Event each : eventLog) {
+            logBuilder.append(each.toString()).append("\n\n");
+        }
+
+        // display in a pop-up dialog
+        JTextArea logTextArea = new JTextArea(25, 40);
+        logTextArea.setText(logBuilder.toString());
+        logTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(logTextArea);
+        JOptionPane.showMessageDialog(frame, scrollPane, "Event Log", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Clears the event log.
+     * Effects: Clears the event log and shows a confirmation message.
+     */
+    private void doClearEventLog() {
+        int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to clear the event log?",
+                "Clear Event Log Confirmation", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            EventLog.getInstance().clear();
+            JOptionPane.showMessageDialog(frame, "The event log has been cleared.", "Event Log Cleared",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /**
