@@ -46,6 +46,7 @@ public class GradeTrackerGUI {
     }
 
 
+    // Effects: constructs a frame for the Grade Tracker Application and disposes it off when application is quit.
     private void initFrame() {
         frame = new JFrame("Grade Tracker Application");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -64,6 +65,7 @@ public class GradeTrackerGUI {
         });
     }
 
+    // Effects: prints all the logged events.
     private void printLoggedEvents() {
         // Header
         System.out.println("---- Application Event Log Start ----");
@@ -139,10 +141,14 @@ public class GradeTrackerGUI {
         updateCourseEnrollmentSummary();
     }
 
+    /**
+     * Updates the course summary display area with the current data.
+     * Modifies: this
+     * Effects: Updates the course summary display area to show the current total number of students in the courses.
+     */
     private void updateCourseEnrollmentSummary() {
         StringBuilder summaryBuilder = new StringBuilder();
         summaryBuilder.append("Total number of Enrolled Students:\n");
-//        summaryBuilder.append("--------------------------------\n");
 
         for (Course course : courses) {
             long count = students.stream()
