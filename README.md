@@ -35,3 +35,28 @@ My personal connection to this project is deeply rooted in the difficulties I've
 - As a user, I would like to be prompted to save the application's state to a file when I choose to save, giving me the control to decide whether or not to save the changes made during the session.
 - As a user, upon launching the application, I wish to be presented with the option to load the grade tracker's state from a previously saved file, allowing me to resume work seamlessly from where I last left off.
 - As a user, I should be given a set of buttons to add a student, course and enter grades.
+
+## **Phase 4: Task 2**
+---- Application Event Log Start ---- \
+Wed Apr 03 12:38:21 PDT 2024 \
+Added Course Name:Java \
+Student Name: JAI \
+Wed Apr 03 12:38:21 PDT 2024 \
+Added Course Name:BSL \
+Student Name: JAI \
+Wed Apr 03 12:38:21 PDT 2024 \
+Added Course Name:Java \
+Student Name: raghu \
+Wed Apr 03 12:38:21 PDT 2024 \
+Added Course Name:BSL \
+Student Name: raghu \
+Wed Apr 03 12:38:39 PDT 2024 \
+Added Course Name:BSL \
+Student Name: Harry \
+Wed Apr 03 12:38:39 PDT 2024 \
+Student Name: Harry \
+Enrolled in course: BSL \
+Wed Apr 03 12:38:50 PDT 2024 \
+Added grade for student: Harry \
+For course: BSL \
+---- Application Event Log End ----
