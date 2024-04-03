@@ -67,16 +67,16 @@ For course: BSL \
 
 ## **Phase 4: Task 3**
 
-Reflecting on the UML class diagram and the current project design, I believe the project would benefit from a clearer distinction 
-between user interface components and the underlying data handling mechanisms. Presently, the *"GradeTrackerGUI"* class 
-bears the weight of direct data operations, indicated by its direct interactions with *"JsonReader"* and *"JsonWriter"*.
-Improvements could be made by introducing a dedicated layer responsible solely for data transactions, which would 
-enhance the separation between the presentation layer and the data access layers, in accordance with the Single 
-Responsibility Principle (SRP). This refactoring would lead to a more modular and easily testable architecture, 
-streamlining the maintenance and evolution of the code.
+Reflecting on the UML class diagram and the current project design, I believe the project would benefit from a clearer distinction
+between user interface components and the underlying data handling mechanisms. Presently, the *" GradeTrackerGUI "* class
+bears the weight of direct data operations, indicated by its direct interactions with *" JsonReader "* and *" JsonWriter "*.
+Improvements could be made by introducing a dedicated layer responsible solely for data transactions, which would
+enhance the separation between the presentation layer and the data access layers, in accordance with the Single
+Responsibility Principle (SRP). This refactoring would lead to a more
+modular and easily testable architecture, streamlining the maintenance and evolution of the code.
 
-Additionally, the role of the Course class, as it stands, extends beyond its primary domain, managing not only course 
-details but also student enrollment and grade processing. This multifaceted responsibility could be simplified by 
-delegating the grade-related concerns to a specialized GradeManager class. Such a division would not only simplify the 
-Course class but would also enhance the system's cohesion, aligning with SRP to facilitate more focused testing and 
+Additionally, the role of the *" Course "* class, as it stands, extends beyond its primary domain, managing not only course
+details but also student enrollment and grade processing. This multifaceted responsibility could be simplified by
+delegating the grade-related concerns to a specialized *" GradeManager "* class. Such a division would not only simplify the
+*" Course "* class but would also enhance the system's cohesion, aligning with SRP to facilitate more focused testing and
 development within the domain of course management.

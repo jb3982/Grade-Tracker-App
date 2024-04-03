@@ -6,18 +6,6 @@ class GradeTrackerGUI {
 class Grade {
 }
 
-class JFrame {
-}
-
-class JPanel {
-}
-
-class JMenuBar {
-}
-
-class JTextArea {
-}
-
 class JsonWriter {
 }
 
@@ -36,24 +24,18 @@ class EventLog {
 class Event {
 }
 
-GradeTrackerGUI *-- "1" JFrame : frame
-GradeTrackerGUI *-- "1" JPanel : sidebar
-GradeTrackerGUI *-- "1" JPanel : contentArea
-GradeTrackerGUI *-- "1" JMenuBar : menuBar
-GradeTrackerGUI *-- "1" JTextArea : displayArea
-GradeTrackerGUI *-- "1" JTextArea : courseSummaryDisplayArea
-GradeTrackerGUI *-- "*" Student : students
-GradeTrackerGUI *-- "*" Course : courses
-GradeTrackerGUI *-- "1" JsonWriter : jsonWriter
-GradeTrackerGUI *-- "1" JsonReader : jsonReader
+GradeTrackerGUI *--> "0..*" Student : students
+GradeTrackerGUI *--> "0..*" Course : courses
+GradeTrackerGUI *--> "1" JsonWriter : jsonWriter
+GradeTrackerGUI *--> "1" JsonReader : jsonReader
 GradeTrackerGUI ..> Grade : <<uses>>
 
-Student "1" -- "*" Course : enrolledCourses
+Student "1" --> "0..*" Course : enrolledCourses
 
-Course ..> EventLog : uses >
-Course ..> Event : uses >
+Course ..> EventLog : uses
+Course ..> Event : uses
 Course ..> Grade : <<uses>>
 
-EventLog "1" -- "*" Event : events
+EventLog "1" --> "0..*" Event : events
 
 @enduml
