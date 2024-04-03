@@ -1,16 +1,15 @@
 package ui;
 
-import model.Course;
 import model.Event;
-import model.EventLog;
-import model.Grade;
-import model.Student;
+import model.*;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,12 +45,37 @@ public class GradeTrackerGUI {
         createAndShowGUI();
     }
 
+
     private void initFrame() {
         frame = new JFrame("Grade Tracker Application");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLayout(new BorderLayout());
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                System.out.println("Attempting to quit the application.");
+                System.out.println("User confirmed quit. Printing Log and Closing application.");
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                printLoggedEvents();
+                frame.dispose();
+                System.exit(0);
+            }
+        });
     }
 
+    private void printLoggedEvents() {
+        // Header
+        System.out.println("---- Application Event Log Start ----");
+        // Fetch the EventLog instance
+        EventLog eventLog = EventLog.getInstance();
+        // Print each event to the console
+        for (Event e : eventLog) {
+            System.out.println(e.toString());
+        }
+        // Footer
+        System.out.println("---- Application Event Log End ----");
+    }
 
     /**
      * Creates and shows the GUI.
@@ -868,13 +892,14 @@ public class GradeTrackerGUI {
         int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to quit without saving?",
                 "Quit Confirmation", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            System.out.println("User confirmed quit. Closing application.");
+            System.out.println("User confirmed quit. Printing Log and Closing application.");
+            System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+            printLoggedEvents(); // Print the event log before exiting
             frame.dispose();
             System.exit(0);
         } else {
             System.out.println("User canceled quit. Remaining open.");
         }
     }
-
 }
 
