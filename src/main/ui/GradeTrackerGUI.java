@@ -55,9 +55,6 @@ public class GradeTrackerGUI {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
-                System.out.println("Attempting to quit the application.");
-                System.out.println("User confirmed quit. Printing Log and Closing application.");
-                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
                 printLoggedEvents();
                 frame.dispose();
                 System.exit(0);
@@ -894,12 +891,9 @@ public class GradeTrackerGUI {
      * Effects: Prompts for confirmation and exits the application if confirmed.
      */
     private void doQuitApp() {
-        System.out.println("Attempting to quit the application.");
         int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to quit without saving?",
                 "Quit Confirmation", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            System.out.println("User confirmed quit. Printing Log and Closing application.");
-            System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
             printLoggedEvents(); // Print the event log before exiting
             frame.dispose();
             System.exit(0);

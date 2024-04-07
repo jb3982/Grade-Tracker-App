@@ -112,11 +112,6 @@ public class JsonReader {
 
         // Student grades list parsing
         extractStudentGrades(courseJson, course);
-        // Print the loaded course details
-        System.out.println("Loaded course: " + course.getCourseName());
-        System.out.println("Enrolled students after load: " + course.getEnrolledStudentsID());
-        System.out.println("Student grades after load: " + course.getStudentGrades());
-        System.out.println("=========================================================================================");
 
         return course;
     }
