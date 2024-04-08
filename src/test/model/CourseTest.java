@@ -116,6 +116,12 @@ class CourseTest {
     }
 
     @Test
+    public void testGetGrade_StudentNotEnrolled() {
+        Double grade = course.getGrade(student1);
+        assertNull(grade);
+    }
+
+    @Test
     public void testRemoveGrade() {
         course.enrollStudent(student1);
         course.addGrade(student1, 85.0);

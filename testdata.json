@@ -1,0 +1,17 @@
+{
+    "courses": [{
+        "courseName": "Intro to Java",
+        "credits": 4,
+        "courseCode": "210",
+        "enrolledStudentsID": [],
+        "studentGrades": [],
+        "percentageGrade": 100,
+        "courseDescription": "An introductory course.",
+        "courseID": 101
+    }],
+    "students": [{
+        "studentID": 123,
+        "name": "Alice",
+        "enrolledCourses": []
+    }]
+}
