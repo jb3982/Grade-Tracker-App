@@ -92,33 +92,31 @@ class CourseTest {
     }
 
     @Test
-    public void testGetGrade_ValidGrade() {
-        course.enrollStudent(student1);
-        course.enrollStudent(student2);
-        course.addGrade(student1, 90.0);
-
-        assertEquals(90.0, course.getGrade(student1));
+    public void testGetGradeStudentNotEnrolled() {
+        assertNull(course.getGrade(student1));
     }
 
     @Test
-    public void testGetGrade_NotValidGrade() {
+    public void testGetGradeStudentWithoutGrade() {
+        course.enrollStudent(student1);
+        assertNull(course.getGrade(student1));
+    }
+
+    @Test
+    public void testGetGradeValidStudent() {
         course.enrollStudent(student1);
         course.enrollStudent(student2);
         course.addGrade(student1, 95.0);
-
-        assertNotEquals(90.0, course.getGrade(student1));
+        assertEquals(95.0, course.getGrade(student1));
     }
 
     @Test
-    public void testGetGrade_NoGradeAssigned() {
-        Double grade = course.getGrade(student1);
-        assertNull(grade);
-    }
+    public void testGetGradeWithIndexOutOfBounds() {
+        course.enrollStudent(student1);
+        course.enrollStudent(student2);
+        course.addGrade(student1, 88.0);
 
-    @Test
-    public void testGetGrade_StudentNotEnrolled() {
-        Double grade = course.getGrade(student1);
-        assertNull(grade);
+        assertNull(course.getGrade(student2));
     }
 
     @Test
