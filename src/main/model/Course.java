@@ -182,16 +182,13 @@ public class Course {
         }
     }
 
-
-    // Effects: if student grade is present, get the corresponding course grade
     public Double getGrade(Student student) {
-        Integer gradeFrom = student.getStudentID();
-        for (int i = 0; i < enrolledStudentsID.size(); i++) {
-            if (Objects.equals(enrolledStudentsID.get(i), gradeFrom)) {
-                return studentGrades.get(i);
-            }
+        int index = enrolledStudentsID.indexOf(student.getStudentID());
+        if (index != -1 && index < studentGrades.size()) {
+            return studentGrades.get(index);
+        } else {
+            return null;
         }
-        return null;
     }
 
 
@@ -238,20 +235,6 @@ public class Course {
         }
         return 0;
     }
-
-//    // Effects: Find students needing improvement (grade below a certain threshold)
-//    public List<Student> findStudentsNeedingImprovement(double threshold) {
-//        List<Integer> studentsNeedingImprovement = new ArrayList<>();
-//        studentGrades.forEach((student, grade) -> {
-//            if (grade < threshold) {
-//                studentsNeedingImprovement.add(student);
-//            }
-//        });
-//        for (int studentID : studentGrades) {
-//
-//        }
-//        return studentsNeedingImprovement;
-//    }
 
     // Effects: if the current date falls within the start and end dates of course returns true.
     public boolean isCourseActive(LocalDate currentDate) {

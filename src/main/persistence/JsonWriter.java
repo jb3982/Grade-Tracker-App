@@ -1,6 +1,8 @@
 package persistence;
 
 import model.Course;
+import model.Event;
+import model.EventLog;
 import model.Student;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,6 +45,7 @@ public class JsonWriter {
         }
         json.put("courses", coursesJsonArray);
 
+        EventLog.getInstance().logEvent(new Event("Saved data to: " + destination));
         saveToFile(json.toString(TAB));
     }
 

@@ -1,6 +1,8 @@
 package persistence;
 
 import model.Course;
+import model.Event;
+import model.EventLog;
 import model.Student;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +29,7 @@ public class JsonReader {
     public Pair<List<Student>, List<Course>> read() throws IOException {
         String jsonData = readFile(source);
         JSONObject jsonObject = new JSONObject(jsonData);
+        EventLog.getInstance().logEvent(new Event("Loaded Data From: " + source));
         return parseGradeTracker(jsonObject);
     }
 

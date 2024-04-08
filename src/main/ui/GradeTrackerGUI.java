@@ -64,15 +64,11 @@ public class GradeTrackerGUI {
 
     // Effects: prints all the logged events.
     private void printLoggedEvents() {
-        // Header
         System.out.println("---- Application Event Log Start ----");
-        // Fetch the EventLog instance
         EventLog eventLog = EventLog.getInstance();
-        // Print each event to the console
         for (Event e : eventLog) {
             System.out.println(e.toString());
         }
-        // Footer
         System.out.println("---- Application Event Log End ----");
     }
 
@@ -129,7 +125,8 @@ public class GradeTrackerGUI {
                 sb.append(student.getName()).append(" (ID: ").append(student.getStudentID()).append(")\n");
                 List<Course> enrolledCourses = getCoursesForStudent(student);
                 for (Course course : enrolledCourses) {
-                    sb.append("  - ").append(course.getCourseName()).append("\n");
+                    Double grade = course.getGrade(student);
+                    sb.append("  - ").append(course.getCourseName()).append(": ").append(grade).append("\n");
                 }
                 sb.append("\n");
             }
@@ -190,8 +187,8 @@ public class GradeTrackerGUI {
         enterGrades();
         calculateGpa();
         generateReport();
+        filterStudents();
         summaryView();
-
 
         sidebar.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
@@ -205,6 +202,17 @@ public class GradeTrackerGUI {
         summaryViewButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         summaryViewButton.addActionListener(e -> doSummaryView());
         sidebar.add(summaryViewButton);
+    }
+
+    /**
+     * Effects: Adds a "Filter Students" button to the sidebar. When clicked, it triggers the doFilterStudents()
+     * method, which filters out the displayed students.
+     */
+    private void filterStudents() {
+        JButton filterStudentsButton = new JButton("Filter Students");
+        filterStudentsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        filterStudentsButton.addActionListener(e -> doFilterStudents());
+        sidebar.add(filterStudentsButton);
     }
 
     /**
@@ -349,6 +357,116 @@ public class GradeTrackerGUI {
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
+
+
+    /**
+     * Modifies: this
+     * Effects: filters out the list of students.
+     */
+    private void doFilterStudents() {
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+
+        JComboBox<Course> courseJComboBox = getCourseJComboBox();
+        JTextField thresholdField = new JTextField();
+
+        panel.add(new JLabel("Select Course:"));
+        panel.add(courseJComboBox);
+        panel.add(new JLabel("Enter Threshold Grade:"));
+        panel.add(thresholdField);
+
+        int value = JOptionPane.showConfirmDialog(frame, panel, "Enter Threshold Grades",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (value == JOptionPane.OK_OPTION) {
+            Course selectedCourse = (Course) courseJComboBox.getSelectedItem();
+            String thresholdText = thresholdField.getText().trim();
+            double grade = 0.0;
+
+            extractedTryCatch(selectedCourse, thresholdText);
+        }
+    }
+
+    // helper method
+    private void extractedTryCatch(Course selectedCourse, String thresholdText) {
+        double grade;
+        try {
+            grade = Double.parseDouble(thresholdText);
+
+            List<Student> studentsNeedingImprovement = new ArrayList<>();
+            for (Integer studentId : selectedCourse.getEnrolledStudentsID()) {
+                Student student = findStudentById(studentId);
+                if (student != null) {
+                    Double studentGrade = selectedCourse.getGrade(student);
+                    if (studentGrade != null && studentGrade < grade) {
+                        studentsNeedingImprovement.add(student);
+                    }
+                }
+            }
+            showFilteredStudentsInNewDialog(studentsNeedingImprovement);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame, "Invalid grade format. Please enter a numeric value.",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // helper method
+    private void showFilteredStudentsInNewDialog(List<Student> filteredStudents) {
+        // Create the dialog to be modal and set to block input to other windows
+        JDialog dialog = new JDialog(frame, "Students Needing Improvement", true);
+        dialog.setLayout(new BorderLayout());
+
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Consolas", Font.PLAIN, 12));
+
+        StringBuilder sb = new StringBuilder();
+        extractedForLoop(filteredStudents, sb);
+
+        textArea.setText(sb.toString());
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        dialog.add(scrollPane, BorderLayout.CENTER);
+
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(e -> dialog.dispose());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(okButton);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setModal(true);
+        dialog.setSize(300, 200);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
+    }
+
+    // helper method
+    private void extractedForLoop(List<Student> filteredStudents, StringBuilder sb) {
+        for (Student student : filteredStudents) {
+            sb.append(student.getName()).append(" (ID: ").append(student.getStudentID()).append(")\n");
+            List<Course> enrolledCourses = getCoursesForStudent(student); // Your method to get courses
+
+            for (Course course : enrolledCourses) {
+                Double grade = course.getGrade(student); // Your method to get the grade
+                if (grade != null) {
+                    sb.append("\t").append(course.getCourseName()).append(": ").append(grade).append("\n");
+                }
+            }
+            sb.append("\n");
+        }
+    }
+
+
+    // Effects: finds the student using ID
+    private Student findStudentById(int id) {
+        for (Student student : students) {
+            if (student.getStudentID() == id) {
+                return student;
+            }
+        }
+        return null;
+    }
+
+
 
     /**
      * Adds a new student.
@@ -572,6 +690,7 @@ public class GradeTrackerGUI {
                 selectedCourse.addGrade(selectedStudent, grade);
                 JOptionPane.showMessageDialog(frame, "Grade entered successfully!", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
+                updateDisplay();
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(frame, "Invalid grade format. Please enter a numeric value.",
                         "Input Error", JOptionPane.ERROR_MESSAGE);
@@ -656,23 +775,29 @@ public class GradeTrackerGUI {
                 return;
             }
 
-            // Prepare details for the message dialog
-            String studentInfo = String.format("Name: %s (ID: %d)", student.getName(), student.getStudentID());
-            String enrolledCourses = "Courses enrolled: \n" + getCoursesForStudent(student).stream()
-                    .map(course -> "  - " + course.getCourseName() + " (" + course.getCourseCode() + ")")
-                    .collect(Collectors.joining("\n"));
-            double gpa = grade.calculateGPA(getCoursesForStudent(student));
-            String gpaInfo = String.format("GPA: %.2f", gpa);
-
-            // Combine all info into one message
-            String message = studentInfo + "\n\n" + enrolledCourses + "\n\n" + gpaInfo;
-
-            JOptionPane.showMessageDialog(frame, message, "GPA Calculated", JOptionPane.INFORMATION_MESSAGE);
+            extractedDetailsMethod(student);
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frame, "Invalid Student ID format.", "Input Error",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // helper method
+    private void extractedDetailsMethod(Student student) {
+        // Prepare details for the message dialog
+        String studentInfo = String.format("Name: %s (ID: %d)", student.getName(), student.getStudentID());
+        String enrolledCourses = "Courses enrolled: \n" + getCoursesForStudent(student).stream()
+                .map(course -> "  - " + course.getCourseName() + " (" + course.getCourseCode() + ")")
+                .collect(Collectors.joining("\n"));
+        double gpa = grade.calculateGPA(getCoursesForStudent(student));
+        EventLog.getInstance().logEvent(new Event("Calculated GPA for Student: " + student.getName()));
+        String gpaInfo = String.format("GPA: %.2f", gpa);
+
+        // Combine all info into one message
+        String message = studentInfo + "\n\n" + enrolledCourses + "\n\n" + gpaInfo;
+
+        JOptionPane.showMessageDialog(frame, message, "GPA Calculated", JOptionPane.INFORMATION_MESSAGE);
     }
 
     // Helper method to get Course objects from a student's enrolled courses IDs
@@ -738,19 +863,19 @@ public class GradeTrackerGUI {
         report.append("Report for ").append(student.getName()).append(" (ID: ")
                 .append(student.getStudentID()).append(")\n\n");
         report.append("Enrolled Courses and Grades:\n");
-        for (Integer courseId : student.getEnrolledCourses()) {
-            Course course = courses.stream()
-                    .filter(c -> c.getCourseID() == courseId)
-                    .findFirst()
-                    .orElse(null);
-            if (course != null) {
-                Double grade = course.getGrade(student);
-                report.append(course.getCourseName())
-                        .append(" (").append(course.getCourseCode()).append("): ")
-                        .append(grade != null ? grade : "No grade")
-                        .append("\n");
-            }
+
+        List<Course> enrolledCourses = getCoursesForStudent(student);
+        for (Course course : enrolledCourses) {
+            Double grade = course.getGrade(student); // This method should handle retrieving the grade for the student
+            // If grade is null, append "NaN", otherwise append the grade
+            report.append(course.getCourseName())
+                    .append(" (").append(course.getCourseCode()).append("): ")
+                    .append(grade != null ? grade : "No Grade")
+                    .append("\n");
         }
+
+        EventLog.getInstance().logEvent(new Event("Generated report for Student: " + student.getName()
+                + " (ID: " + student.getStudentID() + ")"));
         return report;
     }
 
@@ -761,21 +886,26 @@ public class GradeTrackerGUI {
      */
     private void doSummaryView() {
         StringBuilder summaryBuilder = new StringBuilder();
-        summaryBuilder.append(String.format("%-10s %-30s %-20s %-15s %n", "Course ID", "Course Name", "Enrollment",
-                "Average Grade"));
+        summaryBuilder.append(String.format("%-10s %-30s %-10s %-15s %-15s %-15s", "Course ID", "Course Name",
+                "Credits","Average Grade","Median Grade", "Std Deviation"));
+        summaryBuilder.append("\n");
 
         for (Course course : courses) {
             double averageGrade = course.calculateAverageGrade();
+            double medianGrade = course.calculateMedianGrade();
+            double standardDeviation = course.calculateStandardDeviation();
             int enrollment = course.getEnrolledStudentsID().size();
-            summaryBuilder.append(String.format("%-10d %-30s %-20d %-15.2f %n", course.getCourseID(),
-                    course.getCourseName(), enrollment, averageGrade));
+
+            summaryBuilder.append(String.format("%-10s %-30s %-10s %-15s %-15s %-15s", course.getCourseID(),
+                    course.getCourseName(), enrollment, averageGrade, medianGrade, standardDeviation));
+            summaryBuilder.append("\n");
         }
+        EventLog.getInstance().logEvent(new Event("Generated summary view"));
 
         JTextArea textArea = new JTextArea(10, 50);
         textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         textArea.setText(summaryBuilder.toString());
         textArea.setEditable(false);
-//        textArea.setSize(1000,textArea.getHeight());
         JScrollPane scrollPane = new JScrollPane(textArea);
         JOptionPane.showMessageDialog(frame, scrollPane, "Summary View", JOptionPane.INFORMATION_MESSAGE);
     }

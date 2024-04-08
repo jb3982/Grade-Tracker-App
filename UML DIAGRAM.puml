@@ -24,18 +24,18 @@ class EventLog {
 class Event {
 }
 
-GradeTrackerGUI *--> "0..*" Student : students
-GradeTrackerGUI *--> "0..*" Course : courses
-GradeTrackerGUI *--> "1" JsonWriter : jsonWriter
-GradeTrackerGUI *--> "1" JsonReader : jsonReader
-GradeTrackerGUI ..> Grade : <<uses>>
+GradeTrackerGUI *--> "0..*" Student
+GradeTrackerGUI *--> "0..*" Course
+GradeTrackerGUI *--> "1" JsonWriter
+GradeTrackerGUI *--> "1" JsonReader
+GradeTrackerGUI ..> Grade
 
-Student "1" --> "0..*" Course : enrolledCourses
+Student "1" --> "0..*" Course
 
-Course ..> EventLog : uses
-Course ..> Event : uses
-Course ..> Grade : <<uses>>
+Course ..> EventLog
+Course ..> Event
+Course ..> Grade
 
-EventLog "1" --> "0..*" Event : events
+EventLog "1" --> "0..*" Event
 
 @enduml
