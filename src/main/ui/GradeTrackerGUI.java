@@ -184,6 +184,7 @@ public class GradeTrackerGUI {
 
         addStudent();
         addCourse();
+        editStudentOrCourse();
         enterGrades();
         calculateGpa();
         generateReport();
@@ -191,6 +192,13 @@ public class GradeTrackerGUI {
         summaryView();
 
         sidebar.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    }
+
+    private void editStudentOrCourse() {
+        JButton editButton = new JButton("Edit");
+        editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        editButton.addActionListener(e -> doEditStudentOrCourse());
+        sidebar.add(editButton);
     }
 
     /**
@@ -356,6 +364,147 @@ public class GradeTrackerGUI {
             JOptionPane.showMessageDialog(frame, "The event log has been cleared.", "Event Log Cleared",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+//    private void doEditStudentOrCourse() {
+//        String[] options = {"Edit Student", "Edit Course"};
+//        int choice = JOptionPane.showOptionDialog(frame, "What would you like to edit?", "Edit Option", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+//        if (choice == 0) {
+//            doEditStudent();
+//        } else if (choice == 1) {
+//            doEditCourse();
+//        }
+//    }
+
+
+    private void doEditStudentOrCourse() {
+        String[] options = {"Edit Course", "Edit Student"};
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("What would you like to edit?", JLabel.CENTER);
+        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(label, BorderLayout.CENTER);
+
+        ImageIcon icon = new ImageIcon("path/to/icon.png"); // Replace with your icon path
+        label.setIcon(icon);
+
+        // Create buttons
+        JButton editCourseButton = new JButton(options[0]);
+        JButton editStudentButton = new JButton(options[1]);
+
+        // Set background color to white
+        editCourseButton.setBackground(Color.WHITE);
+        editStudentButton.setBackground(Color.WHITE);
+
+        // Action listeners for each button
+        editCourseButton.addActionListener(e -> {
+            doEditCourse();
+            ((JComponent) e.getSource()).getTopLevelAncestor().setVisible(false); // Close dialog
+        });
+        editStudentButton.addActionListener(e -> {
+            doEditStudent();
+            ((JComponent) e.getSource()).getTopLevelAncestor().setVisible(false); // Close dialog
+        });
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(editCourseButton);
+        buttonPanel.add(editStudentButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Display the dialog
+        JOptionPane.showOptionDialog(frame, panel, "Edit Option", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE, null, new Object[]{}, null);
+    }
+
+
+
+    private  void doEditCourse() {
+        JComboBox<Course> courseComboBox = getCourseJComboBox();
+        JOptionPane.showMessageDialog(frame, courseComboBox, "Select Course to edit", JOptionPane.QUESTION_MESSAGE);
+
+        Course selectedCourse = (Course) courseComboBox.getSelectedItem();
+        if (selectedCourse == null) return;
+
+        JTextField courseNameField = new JTextField(selectedCourse.getCourseName());
+        JTextField courseCodeField = new JTextField(selectedCourse.getCourseCode());
+        JTextField courseDescriptionField = new JTextField(selectedCourse.getCourseDescription());
+        JTextField courseIDField = new JTextField(String.valueOf(selectedCourse.getCourseID()));
+        JTextField creditsField = new JTextField(String.valueOf(selectedCourse.getCredits()));
+        JTextField percentageGradeField = new JTextField(String.valueOf(selectedCourse.getPercentageGrade()));
+
+        JPanel panel = getCoursePanel(courseNameField, courseCodeField, courseDescriptionField, courseIDField,
+                creditsField, percentageGradeField);
+
+        int result = JOptionPane.showConfirmDialog(frame, panel, "Edit Course Details", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            // Update course details
+            try {
+                selectedCourse.setCourseName(courseNameField.getText().trim());
+                selectedCourse.setCourseCode(courseCodeField.getText().trim());
+                selectedCourse.setCourseDescription(courseDescriptionField.getText().trim());
+                selectedCourse.setCourseID(Integer.parseInt(courseIDField.getText().trim()));
+                selectedCourse.setCredits(Integer.parseInt(creditsField.getText().trim()));
+                selectedCourse.setPercentageGrade(Double.parseDouble(percentageGradeField.getText().trim()));
+                JOptionPane.showMessageDialog(frame, "Course details updated!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                updateDisplay();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(frame, "Invalid input for numeric fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
+
+    private void doEditStudent() {
+        JComboBox<Student> studentComboBox = getStudentJComboBox();
+        JOptionPane.showMessageDialog(frame, studentComboBox, "Select Student to Edit", JOptionPane.QUESTION_MESSAGE);
+
+        Student selectedStudent = (Student) studentComboBox.getSelectedItem();
+        if (selectedStudent == null) return;
+
+        JTextField nameField = new JTextField(selectedStudent.getName());
+        JTextField idField = new JTextField(String.valueOf(selectedStudent.getStudentID()));
+
+        // List of courses and grades for the student
+        DefaultListModel<Course> listModel = new DefaultListModel<>();
+        courses.forEach(listModel::addElement);
+        JList<Course> courseList = getStudentList(listModel);
+        courseList.setSelectedIndices(selectedStudent.getEnrolledCourses().stream()
+                .mapToInt(courseId -> findCourseIndexById(courseId)).toArray());
+
+        JPanel studentPanel = getStudentPanel(nameField, idField, new JScrollPane(courseList));
+
+        int result = JOptionPane.showConfirmDialog(frame, studentPanel, "Edit Student Details", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int newId = Integer.parseInt(idField.getText().trim());
+                selectedStudent.setName(nameField.getText().trim());
+                selectedStudent.setStudentID(newId);
+
+                selectedStudent.clearCourses();
+                for (Course course : courseList.getSelectedValuesList()) {
+                    selectedStudent.addCourse(course);
+                    course.enrollStudent(selectedStudent);
+                    // Allow editing grades
+                    String gradeStr = JOptionPane.showInputDialog(frame, "Enter grade for " + course.getCourseName(),
+                            "Grade Entry", JOptionPane.QUESTION_MESSAGE);
+                    double grade = Double.parseDouble(gradeStr);
+                    course.addGrade(selectedStudent, grade);
+                }
+                JOptionPane.showMessageDialog(frame, "Student details updated!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                updateDisplay();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(frame, "Invalid input for ID or grade.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private int findCourseIndexById(Integer courseId) {
+        for (int i = 0; i < courses.size(); i++) {
+            if (courses.get(i).getCourseID() == courseId) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 

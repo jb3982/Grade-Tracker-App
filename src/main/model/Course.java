@@ -94,25 +94,29 @@ public class Course {
 
     // Setters
 
-//    public void setCourseCode(String courseCode) {
-//        this.courseCode = courseCode;
-//    }
-//
-//    public void setCourseName(String courseName) {
-//        this.courseName = courseName;
-//    }
-//
-//    public void setCourseDescription(String courseDescription) {
-//        this.courseDescription = courseDescription;
-//    }
-//
-//    public void setCourseID(int courseID) {
-//        this.courseID = courseID;
-//    }
-//
-//    public void setCredits(int credits) {
-//        this.credits = credits;
-//    }
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public void setCourseDescription(String courseDescription) {
+        this.courseDescription = courseDescription;
+    }
+
+    public void setCourseID(int courseID) {
+        this.courseID = courseID;
+    }
+
+    public void setCredits(int credits) {
+        this.credits = credits;
+    }
+
+    public void setPercentageGrade(double percentageGrade) {
+        this.percentageGrade = percentageGrade;
+    }
 
     // Effects: returns the starting date of the course.
     public void setStartDate(LocalDate getStartDate) {

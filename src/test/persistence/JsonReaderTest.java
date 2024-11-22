@@ -166,7 +166,7 @@ class JsonReaderTest {
     void testExtractStudentGrades() {
         try {
             // Setup
-            Path testFilePath = tempDir.resolve(TEST_FILE);
+            // Path testFilePath = tempDir.resolve(TEST_FILE);
 
             // Create a Course with JSON array having Integer and Double grades
             JSONObject courseObject = new JSONObject();
@@ -255,7 +255,7 @@ class JsonReaderTest {
     void testExtractEnrolledStudentsID() {
         try {
             // Setup
-            Path testFilePath = tempDir.resolve(TEST_FILE);
+            // Path testFilePath = tempDir.resolve(TEST_FILE);
 
             // Create a Course with JSON array of enrolled student IDs
             JSONObject courseObject = new JSONObject();
